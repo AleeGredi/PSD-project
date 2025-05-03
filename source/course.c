@@ -1,7 +1,8 @@
 #include "course.h"
 
-#include "stdlib.h"
-#include "string.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 struct course {
     uint16_t id;
@@ -31,18 +32,25 @@ course_ptr create_course(
     return new_course;
 }
 
+
+//TODO: check for edge case and errors/unitialized values
+
 uint16_t get_course_id(course_ptr course) {
     return course->id;
 }
-char* get_course_name(course_ptr course) {
+
+const char* get_course_name(course_ptr course) {
     return course->name;
 }
-char* get_course_date(course_ptr course) {
+
+const char* get_course_date(course_ptr course) {
     return course->date;
 }
-char* get_course_time(course_ptr course) {
+
+const char* get_course_time(course_ptr course) {
     return course->time;
 }
+
 uint16_t get_course_seats_total(course_ptr course) {
     return course->seats_total;
 }
@@ -65,4 +73,3 @@ void delete_course(course_ptr course) {
     free(course->time);
     free(course);
 }
-
