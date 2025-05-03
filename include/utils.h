@@ -5,7 +5,7 @@
 
 #define CHECK_NULL(ptr) do { \
     if ((ptr) == NULL) { \
-        perror("ERROR: %s is NULL at %s:%d\n", #ptr, __FILE__, __LINE__); \
+        fprintf(stderr, "ERROR: %s is NULL at %s:%d\n", #ptr, __FILE__, __LINE__); \
         exit(1); \
     } \
 } while (0)
