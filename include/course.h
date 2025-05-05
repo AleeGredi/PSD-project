@@ -7,9 +7,9 @@ typedef struct course *course_ptr;
 
 course_ptr create_course(
     uint16_t id,
-    const char* name, 
-    const char* date, 
-    const char* time, 
+    char* name, 
+    char* date, 
+    char* time, 
     uint16_t seats_total,
     uint16_t seats_booked
 );

@@ -13,8 +13,8 @@ struct subscription {
 
 subscription_ptr create_subscription(
     uint16_t id,
-    const char* start_date,
-    const char* end_date
+    char* start_date,
+    char* end_date
 ) {
     subscription_ptr new_subscription = malloc(sizeof(struct subscription));
     CHECK_NULL(new_subscription);

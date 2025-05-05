@@ -7,8 +7,8 @@ typedef struct subscription *subscription_ptr;
 
 subscription_ptr create_subscription(
     uint16_t id,
-    const char* start_date,
-    const char* end_date
+    char* start_date,
+    char* end_date
 );
 
 uint16_t get_subscription_id(subscription_ptr subscription);

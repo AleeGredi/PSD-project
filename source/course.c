@@ -1,4 +1,5 @@
 #include "course.h"
+#include "utils.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,26 +7,37 @@
 
 struct course {
     uint16_t id;
-    const char* name;
-    const char* date;
-    const char* time;
+    char* name;
+    char* date;
+    char* time;
     uint16_t seats_total;
     uint16_t seats_booked;
 };
 
 course_ptr create_course(
     uint16_t id, 
-    const char* name, 
-    const char* date, 
-    const char* time, 
+    char* name, 
+    char* date, 
+    char* time, 
     uint16_t seats_total,
     uint16_t seats_booked
 ) {
     struct course* new_course = malloc(sizeof(struct course));
+    CHECK_NULL(new_course);
     new_course->id = id;
-    new_course->name = strdup(name);
-    new_course->date = strdup(date);
-    new_course->time = strdup(time);
+
+    new_course->name = malloc(strlen(name) + 1);
+    CHECK_NULL(new_course->name);
+    strcpy(new_course->name, name);
+
+    new_course->date = malloc(strlen(date) + 1);
+    CHECK_NULL(new_course->date);
+    strcpy(new_course->date, date);
+
+    new_course->time = malloc(strlen(time) + 1);
+    CHECK_NULL(new_course->time);
+    strcpy(new_course->time, time);
+
     new_course->seats_total = seats_total;
     new_course->seats_booked = seats_booked;
 
