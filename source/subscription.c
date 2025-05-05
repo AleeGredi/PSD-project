@@ -1,4 +1,5 @@
 #include "subscription.h"
+#include "utils.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,8 +7,8 @@
 
 struct subscription {
     uint16_t id;
-    const char* start_date;
-    const char* end_date;
+    char* start_date;
+    char* end_date;
 };
 
 subscription_ptr create_subscription(
@@ -37,11 +38,11 @@ uint16_t get_subscription_id(subscription_ptr subscription) {
     return subscription->id;
 }
 
-char* get_subscription_start_date(subscription_ptr subscription) {
+const char* get_subscription_start_date(subscription_ptr subscription) {
     return subscription->start_date;
 }
 
-char* get_subscription_end_date(subscription_ptr subscription) {
+const char* get_subscription_end_date(subscription_ptr subscription) {
     return subscription->end_date;
 }
 
