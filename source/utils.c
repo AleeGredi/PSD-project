@@ -70,5 +70,57 @@ int compare_date(const char* date_one, const char* date_two) {
         }
     }
 
+    // clean up
+    free(date_one_copy);
+    free(date_two_copy);
+
+    return return_value;
+}
+
+int compare_time(const char* time_one, const char* time_two) {
+    // minute - hour
+    int time_one_data[2] = {0};
+    int time_two_data[2] = {0};
+
+    char* time_one_copy = malloc(strlen(time_one) + 1);
+    CHECK_NULL(time_one_copy);
+    strcpy(time_one_copy, time_one);
+
+    char* time_two_copy = malloc(strlen(time_two) + 1);
+    CHECK_NULL(time_two_copy);
+    strcpy(time_two_copy, time_two);
+    
+    int i = 0;
+    char* substr;
+    substr = strtok(time_one_copy, ":");
+    do{
+        time_one_data[i] = convert_to_int(substr);
+        i++;
+    }while((substr = strtok(NULL, ":")));
+    
+    i = 0;
+    substr = strtok(time_two_copy, ":");
+    do{
+        time_two_data[i] = convert_to_int(substr);
+        i++;
+    }while((substr = strtok(NULL, ":")));
+
+    int return_value = -2;
+    for(i = 1; i >= 0; i--) {
+        if(time_one_data[i] > time_two_data[i]) {
+            return_value = 1;
+        }
+        if(time_one_data[i] < time_two_data[i]) {
+            return_value = -1;
+        }
+        if((time_one_data[i] == time_two_data[i]) && i == 0) {
+            return_value = 0;
+        }
+    }
+
+    // clean up
+    free(time_one_copy);
+    free(time_two_copy);
+
     return return_value;
 }
