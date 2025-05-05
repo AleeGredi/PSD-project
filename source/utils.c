@@ -47,23 +47,25 @@ int compare_date(const char* date_one, const char* date_two) {
     substr = strtok(date_one_copy, "/");
     do{
         date_one_data[i] = convert_to_int(substr);
-    }while(substr = strtok(NULL, "/"));
+        i++;
+    }while((substr = strtok(NULL, "/")));
     
     i = 0;
     substr = strtok(date_two_copy, "/");
     do{
         date_two_data[i] = convert_to_int(substr);
-    }while(substr = strtok(NULL, "/"));
+        i++;
+    }while((substr = strtok(NULL, "/")));
 
     int return_value = -2;
-    for(i = 0; i < 3; i++) {
+    for(i = 2; i >= 0; i--) {
         if(date_one_data[i] > date_two_data[i]) {
             return_value = 1;
         }
         if(date_one_data[i] < date_two_data[i]) {
             return_value = -1;
         }
-        if((date_one_data[i] == date_two_data[i]) && i == 2) {
+        if((date_one_data[i] == date_two_data[i]) && i == 0) {
             return_value = 0;
         }
     }
