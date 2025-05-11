@@ -1,5 +1,6 @@
 #include "course.h"
 #include "utils.h"
+#include "booking.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +13,7 @@ struct course {
     char* time;
     uint16_t seats_total;
     uint16_t seats_booked;
+    booking_list_ptr booking_list;
 };
 
 course_ptr create_course(
@@ -41,11 +43,11 @@ course_ptr create_course(
     new_course->seats_total = seats_total;
     new_course->seats_booked = seats_booked;
 
+    new_course->booking_list = create_booking_list();
+
     return new_course;
 }
 
-
-//TODO: check for edge case and errors/unitialized values
 
 uint16_t get_course_id(course_ptr course) {
     return course->id;
@@ -71,6 +73,10 @@ uint16_t get_course_seats_booked(course_ptr course) {
     return course->seats_booked;
 }
 
+void print_course_booking_list(course_ptr course) {
+    print_booking_list(course->booking_list);
+}
+
 void print_course(course_ptr course) {
     printf("Course ID: %u\n", course->id);
     printf("Name     : %s\n", course->name);
@@ -83,5 +89,6 @@ void delete_course(course_ptr course) {
     free(course->name);
     free(course->date);
     free(course->time);
+    delete_booking_list(course->booking_list);
     free(course);
 }

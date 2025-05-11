@@ -20,6 +20,7 @@ const char* get_course_date(course_ptr course);
 const char* get_course_time(course_ptr course);
 uint16_t get_course_seats_total(course_ptr course);
 uint16_t get_course_seats_booked(course_ptr course);
+void print_course_booking_list(course_ptr course);
 
 void print_course(course_ptr course);
 
