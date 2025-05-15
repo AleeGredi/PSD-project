@@ -14,61 +14,145 @@ struct datetime {
     int year;
 };
 
-int compare_date(datetime_ptr date_one, datetime_ptr date_two) {
+/*
+    Builds temporary integer arrays of [day, month, year] for each datetime,
+    then iterates from year down to day comparing corresponding elements to
+    determine chronological order.
+
+    parameters:
+        datetime_one: pointer to the first datetime object.
+        datetime_two: pointer to the second datetime object.
+
+    pre-condition:
+        datetime_one and datetime_two must be non-NULL and contain valid date fields.
+
+    post-condition:
+        Neither datetime object is modified.
+
+    return:
+        -1 if datetime_one is before datetime_two;
+         0 if dates are equal;
+         1 if datetime_one is after datetime_two.
+*/
+int compare_date(datetime_ptr datetime_one, datetime_ptr datetime_two) {
     // day - month - year
-    int date_one_data[3] = {
-        date_one->day,
-        date_one->month,
-        date_one->year
+    int datetime_one_data[3] = {
+        datetime_one->day,
+        datetime_one->month,
+        datetime_one->year
     };
 
-    int date_two_data[3] = {
-        date_two->day,
-        date_two->month,
-        date_two->year
+    int datetime_two_data[3] = {
+        datetime_two->day,
+        datetime_two->month,
+        datetime_two->year
     };
 
     int return_value = 0;
     for(int i = 2; i >= 0; i--) {
-        if(date_one_data[i] > date_two_data[i]) {
+        if(datetime_one_data[i] > datetime_two_data[i]) {
             return_value = 1;
+            break;
         }
-        if(date_one_data[i] < date_two_data[i]) {
+        if(datetime_one_data[i] < datetime_two_data[i]) {
             return_value = -1;
+            break;
         }
     }
 
     return return_value;
 }
 
-int compare_time(datetime_ptr time_one, datetime_ptr time_two) {
+
+/*
+    Constructs integer arrays [minute, hour] for each datetime, then iterates
+    from hour down to minute comparing values to establish time ordering.
+
+    parameters:
+        datetime_one: pointer to the first datetime object.
+        datetime_two: pointer to the second datetime object.
+
+    pre-condition:
+        datetime_one and datetime_two must be non-NULL and contain valid time fields.
+
+    post-condition:
+        Neither datetime object is modified.
+
+    return:
+        -1 if time in datetime_one is before datetime_two;
+         0 if times are equal;
+         1 if datetime_one is after datetime_two.
+*/
+int compare_time(datetime_ptr datetime_one, datetime_ptr datetime_two) {
     // minute - hour
-    int time_one_data[2] = {
-        time_one->minute,
-        time_one->hour
+    int datetime_one_data[2] = {
+        datetime_one->minute,
+        datetime_one->hour
     };
 
-    int time_two_data[2] = {
-        time_two->minute,
-        time_two->hour
+    int datetime_two_data[2] = {
+        datetime_two->minute,
+        datetime_two->hour
     };
 
-    int return_value = -2;
+    int return_value = 0;
     for(int i = 1; i >= 0; i--) {
-        if(time_one_data[i] > time_two_data[i]) {
+        if(datetime_one_data[i] > datetime_two_data[i]) {
             return_value = 1;
+            break;
         }
-        if(time_one_data[i] < time_two_data[i]) {
+        if(datetime_one_data[i] < datetime_two_data[i]) {
             return_value = -1;
-        }
-        if((time_one_data[i] == time_two_data[i]) && i == 0) {
-            return_value = 0;
+            break;
         }
     }
 
     return return_value;
 }
 
+/*
+    First calls compare_date to compare the two datetimes’ dates; if they are
+    equal (result 0), delegates to compare_time to compare times.
+
+    parameters:
+        datetime_one: pointer to the first datetime object.
+        datetime_two: pointer to the second datetime object.
+
+    pre-condition:
+        datetime_one and datetime_two must be non-NULL and fully initialized.
+
+    post-condition:
+        Neither datetime object is modified.
+
+    return:
+        Result of compare_date if non-zero;
+        otherwise result of compare_time.
+*/
+int compare_datetime(datetime_ptr datetime_one, datetime_ptr datetime_two) {
+    int date_compare_result = compare_date(datetime_one, datetime_two);
+    if (date_compare_result == 0) {
+        return compare_time(datetime_one, datetime_two);
+    }
+    return date_compare_result;
+}
+
+/*
+    Allocates a new datetime struct, retrieves the current system time,
+    converts to local time, and populates each field (minute, hour, day,
+    month, year) with proper adjustments (e.g., tm_mon + 1).
+
+    parameters:
+        None.
+
+    pre-condition:
+        Standard time functions (time, localtime) succeed.
+
+    post-condition:
+        A newly allocated datetime object contains the current local date and time.
+
+    return:
+        Pointer to the new datetime object, or exit if allocation fails.
+*/
 datetime_ptr get_datetime() {
     struct datetime* new_datetime = malloc(sizeof(struct datetime));
     CHECK_NULL(new_datetime);
@@ -91,6 +175,21 @@ datetime_ptr get_datetime() {
     return new_datetime;
 }
 
+/*
+    Frees the memory allocated for a datetime object.
+
+    parameters:
+        datetime: pointer to the datetime object to delete.
+
+    pre-condition:
+        datetime must be non-NULL and previously allocated by get_datetime().
+
+    post-condition:
+        The memory for the datetime object is released. The pointer becomes invalid.
+
+    return:
+        Nothing.
+*/
 void delete_datetime(datetime_ptr datetime) {
     free(datetime);
 }
