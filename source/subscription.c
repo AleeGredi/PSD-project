@@ -7,42 +7,37 @@
 
 struct subscription {
     uint16_t id;
-    char* start_date;
-    char* end_date;
+    datetime_ptr start_date;
+    datetime_ptr end_date;
 };
 
 subscription_ptr create_subscription(
     uint16_t id,
-    char* start_date,
-    char* end_date
+    datetime_ptr start_date,
+    datetime_ptr end_date
 ) {
     subscription_ptr new_subscription = malloc(sizeof(struct subscription));
     CHECK_NULL(new_subscription);
     new_subscription->id = id;
 
-    new_subscription->start_date = malloc(strlen(start_date) + 1);
-    CHECK_NULL(new_subscription->start_date);
-    strcpy(new_subscription->start_date, start_date);
+    // stored a reference to the datetime_ptr datetime parameter
+    new_subscription->start_date = start_date;
 
-    new_subscription->end_date = malloc(strlen(end_date) + 1);
-    CHECK_NULL(new_subscription->end_date);
-    strcpy(new_subscription->end_date, end_date);
+    // stored a reference to the datetime_ptr datetime parameter
+    new_subscription->end_date = end_date;
 
     return new_subscription;
 }
-
-
-//TODO: check for edge case and errors/unitialized values
 
 uint16_t get_subscription_id(subscription_ptr subscription) {
     return subscription->id;
 }
 
-const char* get_subscription_start_date(subscription_ptr subscription) {
+const datetime_ptr get_subscription_start_date(subscription_ptr subscription) {
     return subscription->start_date;
 }
 
-const char* get_subscription_end_date(subscription_ptr subscription) {
+const datetime_ptr get_subscription_end_date(subscription_ptr subscription) {
     return subscription->end_date;
 }
 
