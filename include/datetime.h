@@ -81,13 +81,30 @@ int compare_datetime(datetime_ptr datetime_one, datetime_ptr datetime_two);
 datetime_ptr get_datetime();
 
 /*
+    Print the datetime object.
+
+    parameters:
+        datetime: pointer to the datetime object to print.
+
+    pre-condition:
+        datetime must be non-NULL and previously allocated.
+
+    post-condition:
+        Nothing.
+
+    return:
+        Nothing.
+*/
+void print_datetime(datetime_ptr datetime);
+
+/*
     Frees all resources associated with a datetime object.
 
     parameters:
         datetime: pointer to the datetime object to delete.
 
     pre-condition:
-        datetime must be non-NULL and previously allocated by get_datetime().
+        datetime must be non-NULL and previously allocated.
 
     post-condition:
         The memory for the datetime object is released. The pointer becomes invalid.

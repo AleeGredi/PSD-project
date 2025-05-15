@@ -176,6 +176,31 @@ datetime_ptr get_datetime() {
 }
 
 /*
+    Print the datetime object.
+
+    parameters:
+        datetime: pointer to the datetime object to print.
+
+    pre-condition:
+        datetime must be non-NULL and previously allocated.
+
+    post-condition:
+        Nothing.
+
+    return:
+        Nothing.
+*/
+void print_datetime(datetime_ptr datetime) {
+    printf("%d:%d %d/%d/%d\n", 
+        datetime->minute,
+        datetime->hour,
+        datetime->day,
+        datetime->month,
+        datetime->year
+    );
+}
+
+/*
     Frees the memory allocated for a datetime object.
 
     parameters:
