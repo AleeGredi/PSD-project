@@ -64,7 +64,7 @@ uint16_t get_subscription_id(subscription_ptr subscription) {
     return:
         Pointer to the start date datetime object.
 */
-const datetime_ptr get_subscription_start_date(subscription_ptr subscription) {
+datetime_ptr get_subscription_start_date(subscription_ptr subscription) {
     return subscription->start_date;
 }
 
@@ -77,7 +77,7 @@ const datetime_ptr get_subscription_start_date(subscription_ptr subscription) {
     return:
         Pointer to the end date datetime object.
 */
-const datetime_ptr get_subscription_end_date(subscription_ptr subscription) {
+datetime_ptr get_subscription_end_date(subscription_ptr subscription) {
     return subscription->end_date;
 }
 
@@ -89,8 +89,10 @@ const datetime_ptr get_subscription_end_date(subscription_ptr subscription) {
 */
 void print_subscription(subscription_ptr subscription) {
     printf("Subscription ID: %u\n", subscription->id);
-    printf("Start Date: %s\n", subscription->start_date);
-    printf("End Date: %s\n", subscription->end_date);
+    printf("Start Date: ");
+    print_datetime(subscription->start_date);
+    printf("End Date: ");
+    print_datetime(subscription->end_date);
 }
 
 /*

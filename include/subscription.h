@@ -62,7 +62,7 @@ uint16_t get_subscription_id(subscription_ptr subscription);
     return:
         datetime_ptr: A pointer to the start date.
 */
-const datetime_ptr get_subscription_start_date(subscription_ptr subscription);
+datetime_ptr get_subscription_start_date(subscription_ptr subscription);
 
 /*
     Function that retrieves the end date of the subscription.
@@ -79,7 +79,7 @@ const datetime_ptr get_subscription_start_date(subscription_ptr subscription);
     return:
         datetime_ptr: A pointer to the end date.
 */
-const datetime_ptr get_subscription_end_date(subscription_ptr subscription);
+datetime_ptr get_subscription_end_date(subscription_ptr subscription);
 
 /*
     Function that prints the subscription's information.
