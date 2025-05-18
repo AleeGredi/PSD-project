@@ -176,6 +176,41 @@ datetime_ptr get_datetime() {
 }
 
 /*
+    Implementation allocates memory for a datetime struct, verifies
+    the allocation succeeded, then assigns each struct member from
+    the corresponding parameter.
+
+    parameters:
+        minute — minute value to store in the struct
+        hour   — hour value to store in the struct
+        day    — day value to store in the struct
+        month  — month value to store in the struct
+        year   — year value to store in the struct
+
+    pre-condition:
+        malloc must succeed in allocating sizeof(struct datetime) bytes.
+
+    post-condition:
+        The returned struct pointer has all fields set;
+        upon allocation failure, the program exits (via CHECK_NULL).
+
+    return:
+        Pointer to the allocated and populated datetime struct.
+*/
+datetime_ptr crate_datetime(int minute, int hour, int day, int month, int year) {
+    struct datetime* new_datetime = malloc(sizeof(struct datetime));
+    CHECK_NULL(new_datetime);
+
+    new_datetime->minute = minute;
+    new_datetime->hour = hour;
+    new_datetime->day = day;
+    new_datetime->month = month;
+    new_datetime->year = year;
+
+    return new_datetime;
+}
+
+/*
     Print the datetime object.
 
     parameters:

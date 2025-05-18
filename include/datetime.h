@@ -81,6 +81,30 @@ int compare_datetime(datetime_ptr datetime_one, datetime_ptr datetime_two);
 datetime_ptr get_datetime();
 
 /*
+    Allocates and initializes a new datetime object with the specified
+    minute, hour, day, month, and year values.
+
+    parameters:
+        minute — minute value (0–59)
+        hour   — hour value (0–23)
+        day    — day of month (1–31)
+        month  — month of year (1–12)
+        year   — full year (e.g., 2025)
+
+    pre-condition:
+        All input values must form a valid date and time.
+
+    post-condition:
+        Returns a pointer to a freshly allocated datetime struct
+        containing exactly the provided fields.
+
+    return:
+        Pointer to the new datetime struct; exits the program if
+        memory allocation fails.
+*/
+datetime_ptr crate_datetime(int minute, int hour, int day, int month, int year);
+
+/*
     Print the datetime object.
 
     parameters:
