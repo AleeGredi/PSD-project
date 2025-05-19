@@ -1,5 +1,5 @@
-#include "user.h"
 #include "hash_map.h"
+#include "course.h"
 #include "utils.h"
 
 #include <stdio.h>
@@ -8,7 +8,7 @@
 
 struct item {
     uint16_t key;
-    user_ptr value;
+    course_ptr value;
     bool is_occupied;
 };
 
@@ -36,7 +36,7 @@ hash_map_ptr new_hash_map(uint16_t size) {
     return map;
 }
 
-void insert_user(hash_map_ptr map, uint16_t key, user_ptr value) {
+void insert_course(hash_map_ptr map, uint16_t key, course_ptr value) {
     CHECK_NULL(map);
     CHECK_NULL(value);
     if (map->count >= map->size) {
@@ -58,6 +58,7 @@ void insert_user(hash_map_ptr map, uint16_t key, user_ptr value) {
         }
 
         if (slot->key == key) {
+            delete_course(slot->value);
             slot->value = value;
             return;
         }
@@ -66,7 +67,7 @@ void insert_user(hash_map_ptr map, uint16_t key, user_ptr value) {
     fprintf(stderr, "Hash map probing failed, map may be full.\n");
 }
 
-user_ptr get_user(hash_map_ptr map, uint16_t key) {
+course_ptr get_course(hash_map_ptr map, uint16_t key) {
     CHECK_NULL(map);
 
     uint16_t start = hash_function(key, map->size);
@@ -87,7 +88,14 @@ user_ptr get_user(hash_map_ptr map, uint16_t key) {
 }
 
 void free_hash_map(hash_map_ptr map) {
-    if (!map) return;
+    CHECK_NULL(map);
+
+    for (uint16_t i = 0; i < map->size; ++i) {
+        if (map->table[i].is_occupied) {
+            delete_course(map->table[i].value);
+        }
+    }
+
     free(map->table);
     free(map);
 }
