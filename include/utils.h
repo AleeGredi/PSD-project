@@ -10,5 +10,8 @@
     } \
 } while (0)
 
+char *str_dup(const char *s);
+
+char *str_sep(char **stringp, const char *delim);
 
 #endif
