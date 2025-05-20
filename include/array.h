@@ -26,24 +26,25 @@ typedef struct array *array_ptr;
 array_ptr create_array(uint16_t size);
 
 /*
-    Function that adds a reference of `course` into `array`.
+    Adds a new element to the array by inserting its reference at the next
+    available position.
 
     parameters:
-        array: pointer to the array where the course should be added.
-        course: pointer to the course to insert.
+        array:   pointer to the array 
+        element: the void* to insert 
 
     pre-condition:
-        array must be non-NULL and have enough capacity to insert a new course.
-        course must be a valid, non-NULL course_ptr.
+        array must be valid
+        element must be valid
 
     post-condition:
-        The course is added to the array at the next available index.
-        last_element and size fields are incremented.
+        - element iserted at the last available position
 
     return:
-        Nothing.
+        None; exits the program if capacity would be exceeded.
+
 */
-void add_element(array_ptr array, course_ptr course);
+void add_element(array_ptr array, void* element);
 
 /*
     Function that searches for a course by its ID within the array.
@@ -62,27 +63,29 @@ void add_element(array_ptr array, course_ptr course);
     return:
         The zero-based index of the course if a match is found;
         otherwise, returns -1.
-*/
+
 int search_course(array_ptr array, uint16_t course_id);
+*/
 
 /*
-    Function that prints all courses stored in the array in their current order.
+    Iterates over the array and print them.
 
     parameters:
-        array: pointer to the array containing courses to print.
+        array:          pointer to the array (must be valid)
+        print_function: function to print one element (must be valid)
 
     pre-condition:
-        array must be non-NULL and properly initialized.
-        array->elements must point to valid course_ptr entries.
+        array must be valid
+        print_function must be valid
 
     post-condition:
-        All courses in the array are printed to stdout in the order stored.
-        The array contents are not modified.
+        All elements have been passed to print_function in insertion order;
+        the array remains unchanged.
 
     return:
-        Nothing.
+        None.
 */
-void print_array(array_ptr array);
+void print_array(array_ptr array, void (*print_function) (void* element));
 
 
 #endif 

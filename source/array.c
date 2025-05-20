@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 struct array {
-    course_ptr* elements;
+    void** elements;
     uint16_t size;
     uint16_t last_element;
 };
@@ -33,6 +33,7 @@ array_ptr create_array(uint16_t size) {
     struct array* new_array = malloc(sizeof(struct array));
     CHECK_NULL(new_array);
 
+    new_array->elements = malloc(sizeof(void*) * size);
     new_array->size = size;
     new_array->last_element = 0;
 
@@ -40,31 +41,37 @@ array_ptr create_array(uint16_t size) {
 }
 
 /*
-    Adds a new course to the array by inserting its pointer at the next
-    available position (last_element + 1). It then increments both
-    last_element and the size field.
+    Adds a new element to the array by inserting its pointer at the next
+    available position (last_element + 1). It then increments
+    last_element.
 
     parameters:
-        array: pointer to the array where the course should be added.
-        course: pointer to the course to insert.
+        array:   pointer to the array (must be valid)
+        element: the void* to insert (must be valid)
 
     pre-condition:
-        array must be non-NULL and have enough capacity to insert a new course.
-        course must be a valid, non-NULL course_ptr.
+        array must be valid
+        element must be valid
+        array->last_element < array->size
 
     post-condition:
-        The course is added to the array at the next available index.
-        last_element and size fields are incremented.
+        - `elements[old last_element] == element`
+        - `last_element` is incremented by 1
 
     return:
-        Nothing.
+        None; exits the program if capacity would be exceeded.
+
 */
-void add_element(array_ptr array, course_ptr course){
+void add_element(array_ptr array, void* element){
     // data is inserted in order
+    if (array->last_element > array->size) {
+        perror("Array size surpassed");
+        exit(1);
+    }
+    array->elements[array->last_element] = element;
     array->last_element++;
-    array->elements[array->last_element] = course;
-    array->size;
 }
+
 
 /*
     Performs a linear search through the course array, comparing each
@@ -84,7 +91,7 @@ void add_element(array_ptr array, course_ptr course){
     return:
         The zero-based index of the course if a match is found;
         otherwise, returns -1.
-*/
+
 int search_course(array_ptr array, uint16_t course_id) {
     for(int i = 0; i < array->size; i++) {
         if (get_course_id(array->elements) == course_id) {
@@ -93,29 +100,31 @@ int search_course(array_ptr array, uint16_t course_id) {
     }
     return -1;
 }
+*/
 
 /*
-    Iterates through the array and prints each course using print_course().
-    A header line is printed before the course list for clarity.
+    Iterates over the array and calls a user-provided print function on each element.
 
     parameters:
-        array: pointer to the array containing courses to print.
+        array:          pointer to the array (must be valid)
+        print_function: function to print one element (must be valid)
 
     pre-condition:
-        array must be non-NULL and properly initialized.
-        array->elements must point to valid course_ptr entries.
+        array must be valid
+        print_function must be valid
 
     post-condition:
-        All courses in the array are printed to stdout in the order stored.
-        The array contents are not modified.
+        All elements have been passed to print_function in insertion order;
+        the array remains unchanged.
 
     return:
-        Nothing.
+        None.
 */
-void print_array(array_ptr array) {
-    printf("MyFitness Courses:\n");
+void print_array(array_ptr array, void (*print_function) (void* element)) {
+    CHECK_NULL(array);
+    CHECK_NULL(print_function);
     for (int i = 0; i < array->size; i++) {
-        print_course(array->elements[i]);
+        print_function(array->elements[i]);
         printf("\n");
     }
 }
