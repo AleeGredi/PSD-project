@@ -197,7 +197,7 @@ datetime_ptr get_datetime() {
     return:
         Pointer to the allocated and populated datetime struct.
 */
-datetime_ptr crate_datetime(int minute, int hour, int day, int month, int year) {
+datetime_ptr create_datetime(int minute, int hour, int day, int month, int year) {
     struct datetime* new_datetime = malloc(sizeof(struct datetime));
     CHECK_NULL(new_datetime);
 

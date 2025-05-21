@@ -102,7 +102,7 @@ datetime_ptr get_datetime();
         Pointer to the new datetime struct; exits the program if
         memory allocation fails.
 */
-datetime_ptr crate_datetime(int minute, int hour, int day, int month, int year);
+datetime_ptr create_datetime(int minute, int hour, int day, int month, int year);
 
 /*
     Print the datetime object.
