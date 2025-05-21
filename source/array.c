@@ -29,7 +29,7 @@ struct array {
         A pointer to the newly allocated array structure,
         or exit if memory allocation fails.
 */
-array_ptr create_array(uint16_t size) {
+array_ptr array_create(uint16_t size) {
     struct array* new_array = malloc(sizeof(struct array));
     CHECK_NULL(new_array);
 
@@ -62,7 +62,7 @@ array_ptr create_array(uint16_t size) {
         None; exits the program if capacity would be exceeded.
 
 */
-void add_element(array_ptr array, void* element){
+void array_add(array_ptr array, void* element){
     // data is inserted in order
     if (array->last_element > array->size) {
         perror("Array size surpassed");
@@ -74,12 +74,12 @@ void add_element(array_ptr array, void* element){
 
 
 /*
-    Performs a linear search through the course array, comparing each
-    course’s ID with the target course_id using get_course_id().
+    Performs a linear search through the element array, comparing each
+    element’s ID with the target course_id using get_course_id().
 
     parameters:
         array: pointer to the initialized array of courses to search.
-        course_id: the course ID to find (uint16_t).
+        course_id: the element ID to find (uint16_t).
 
     pre-condition:
         array must be non-NULL and properly initialized.
@@ -89,7 +89,7 @@ void add_element(array_ptr array, void* element){
         The array remains unchanged.
 
     return:
-        The zero-based index of the course if a match is found;
+        The zero-based index of the element if a match is found;
         otherwise, returns -1.
 
 int search_course(array_ptr array, uint16_t course_id) {
@@ -120,7 +120,7 @@ int search_course(array_ptr array, uint16_t course_id) {
     return:
         None.
 */
-void print_array(array_ptr array, void (*print_function) (void* element)) {
+void array_print(array_ptr array, void (*print_function) (void* element)) {
     CHECK_NULL(array);
     CHECK_NULL(print_function);
     for (int i = 0; i < array->size; i++) {

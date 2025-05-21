@@ -21,7 +21,7 @@ int main(void) {
     hash_map_ptr hash_map;
     array_ptr array;
     loading(&array, &hash_map);
-    print_array(array, print_courses);
+    array_print(array, print_courses);
     
     
     return 0;
@@ -39,7 +39,7 @@ void load_courses(const char *filename, array_ptr* array, hash_map_ptr* hash_map
         exit(1);
     }
 
-    *array = create_array(num_of_courses);
+    *array = array_create(num_of_courses);
     *hash_map = new_hash_map(num_of_courses);
 
     char line[LINE_READ_BUFFER];
@@ -82,7 +82,7 @@ void load_courses(const char *filename, array_ptr* array, hash_map_ptr* hash_map
             seats_booked
         );
         // add course to array (already sorted in file);
-        add_element(*array, course);
+        array_add(*array, course);
         // add course to hash map
         insert_course(*hash_map, get_course_id(course), course);
     }

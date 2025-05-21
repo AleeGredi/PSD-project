@@ -23,7 +23,7 @@ typedef struct array *array_ptr;
         A pointer to the newly allocated array structure,
         or exit if memory allocation fails.
 */
-array_ptr create_array(uint16_t size);
+array_ptr array_create(uint16_t size);
 
 /*
     Adds a new element to the array by inserting its reference at the next
@@ -44,14 +44,14 @@ array_ptr create_array(uint16_t size);
         None; exits the program if capacity would be exceeded.
 
 */
-void add_element(array_ptr array, void* element);
+void array_add(array_ptr array, void* element);
 
 /*
-    Function that searches for a course by its ID within the array.
+    Function that searches for a element by its ID within the array.
 
     parameters:
         array: pointer to the initialized array of courses to search.
-        course_id: the course ID to find (uint16_t).
+        course_id: the element ID to find (uint16_t).
 
     pre-condition:
         array must be non-NULL and properly initialized.
@@ -61,7 +61,7 @@ void add_element(array_ptr array, void* element);
         The array remains unchanged.
 
     return:
-        The zero-based index of the course if a match is found;
+        The zero-based index of the element if a match is found;
         otherwise, returns -1.
 
 int search_course(array_ptr array, uint16_t course_id);
@@ -85,7 +85,7 @@ int search_course(array_ptr array, uint16_t course_id);
     return:
         None.
 */
-void print_array(array_ptr array, void (*print_function) (void* element));
+void array_print(array_ptr array, void (*print_function) (void* element));
 
 
 #endif 
