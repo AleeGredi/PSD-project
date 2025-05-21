@@ -1,4 +1,6 @@
 #include "utils.h"
+#include <stdlib.h>
+#include <string.h>
 
 char *str_dup(const char *s) {
     size_t len = strlen(s) + 1;

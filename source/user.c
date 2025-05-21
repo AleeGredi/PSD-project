@@ -206,17 +206,17 @@ subscription_ptr get_user_subscription(user_ptr user) {
         None.
 */
 void save_user_to_file(user_ptr user, FILE* f) {
-    fprintf(f, "%u,%s,%s,%s,%s,%s,%u,%s,%s\n",
+    fprintf(f, "%u,%s,%s,%s,%s,%s,%u,\n",
         user->id,
         user->CF,
         user->first_name,
         user->last_name,
         user->username,
         user->password,
-        get_subscription_id(user->subscription),
-        get_subscription_start_date(user->subscription),
-        get_subscription_end_date(user->subscription)
+        get_subscription_id(user->subscription)
     );
+    print_datetime(get_subscription_start_date(user->subscription));
+    print_datetime(get_subscription_end_date(user->subscription));
 }
 
 /*
@@ -234,7 +234,7 @@ void save_user_to_file(user_ptr user, FILE* f) {
 
     Returns:
         user_ptr: pointer to the loaded user object, or NULL on error.
-*/
+
 user_ptr load_user_from_file(FILE* f) {
     if (!f) return NULL;
 
@@ -269,7 +269,7 @@ user_ptr load_user_from_file(FILE* f) {
 
     return create_user(id, CF, first_name, last_name, username, password, sub);
 }
-
+*/
 /*
     Prints detailed user information to standard output.
 
