@@ -26,7 +26,7 @@ static uint16_t hash_function(uint16_t key, uint16_t size) {
     return (uint16_t)(x % size);
 }
 
-hash_map_ptr new_hash_map(uint16_t size) {
+hash_map_ptr create_hash_map(uint16_t size) {
     hash_map_ptr map = malloc(sizeof(*map));
     CHECK_NULL(map);
     map->size = size;
@@ -87,7 +87,7 @@ course_ptr get_course(hash_map_ptr map, uint16_t key) {
     return NULL;
 }
 
-void free_hash_map(hash_map_ptr map) {
+void delete_hash_map(hash_map_ptr map) {
     CHECK_NULL(map);
 
     for (uint16_t i = 0; i < map->size; ++i) {

@@ -9,7 +9,7 @@ typedef struct item* item_ptr;
 typedef struct hash_map* hash_map_ptr;
 
 // Create a new hash map with given capacity
-hash_map_ptr new_hash_map(uint16_t size);
+hash_map_ptr create_hash_map(uint16_t size);
 
 // Insert or update the course at key
 void insert_course(hash_map_ptr map, uint16_t key, course_ptr value);
@@ -18,6 +18,6 @@ void insert_course(hash_map_ptr map, uint16_t key, course_ptr value);
 course_ptr get_course(hash_map_ptr map, uint16_t key);
 
 // Free the entire map
-void free_hash_map(hash_map_ptr map);
+void delete_hash_map(hash_map_ptr map);
 
 #endif
