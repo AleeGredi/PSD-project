@@ -2,10 +2,13 @@
 #define USER_H
 
 #include "subscription.h"
+#include "array.h"
+#include "linked_list.h"
 #include <stdio.h>
 #include <stdint.h>
 
 typedef struct user *user_ptr;
+typedef struct frequentation *frequentation_ptr;
 
 /*
     Creates a new user object with the specified parameters.
@@ -30,14 +33,19 @@ typedef struct user *user_ptr;
         user_ptr: pointer to the newly created user.
 */
 user_ptr create_user(
-    uint16_t id,
+     uint16_t id,
     char* CF,
     char* first_name,
     char* last_name,
     char* username,
     char* password,
-    subscription_ptr subscription    
+    subscription_ptr subscription,
+    datetime_ptr last_report_date
 );
+
+frequentation_ptr create_frequentation(uint16_t course_id, char *course_name, uint16_t times_booked);
+
+void print_frequentation_callback(void* element);
 
 /*
     Returns the user's ID.
@@ -174,43 +182,6 @@ subscription_ptr get_user_subscription(user_ptr user);
         None.
 */
 void print_user(user_ptr user);
-
-/*
-    Saves the user to a file in binary format.
-
-    Parameters:
-        user: pointer to the user object.
-        f: pointer to an open file for writing.
-
-    Pre-conditions:
-        user and f must not be NULL.
-        File must be open for writing.
-
-    Post-conditions:
-        User data is written to the file.
-
-    Returns:
-        None.
-*/
-void save_user_to_file(user_ptr user, FILE* f);
-
-/*
-    Loads a user from a file in binary format.
-
-    Parameters:
-        f: pointer to an open file for reading.
-
-    Pre-conditions:
-        f must not be NULL.
-        File must contain valid user data.
-
-    Post-conditions:
-        A new user object is created and returned.
-
-    Returns:
-        user_ptr: pointer to the loaded user object.
-*/
-user_ptr load_user_from_file(FILE* f);
 
 /*
     Frees all memory associated with the user.

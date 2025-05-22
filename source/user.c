@@ -1,6 +1,7 @@
 #include "user.h"
 #include "subscription.h"
 #include "utils.h"
+#include "linked_list.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,7 +15,36 @@ struct user {
     char* username;
     char* password;
     subscription_ptr subscription;
+    datetime_ptr last_report_date;
 };
+
+
+
+struct frequentation {
+    uint16_t course_id;
+    char *course_name;
+    uint16_t times_booked;
+};
+
+frequentation_ptr create_frequentation(uint16_t course_id, char *course_name, uint16_t times_booked){
+    struct frequentation* new_frequentation = malloc(sizeof(struct frequentation));
+
+    new_frequentation->course_id = course_id;
+
+    new_frequentation->course_name = malloc(strlen(course_name) + 1);
+    CHECK_NULL(new_frequentation->course_name);
+    strcpy(new_frequentation->course_name, course_name);
+
+    new_frequentation->times_booked = times_booked;
+
+    return new_frequentation;
+}
+
+void print_frequentation_callback(void* element) {
+    frequentation_ptr entry = (frequentation_ptr)element;
+    printf("History Entry - ID: %hu, Name: %s, Times Booked: %hu\n",
+           entry->course_id, entry->course_name, entry->times_booked);
+}
 
 /*
     Allocates and initializes a new user object by allocating its strings
@@ -45,9 +75,10 @@ user_ptr create_user(
     char* last_name,
     char* username,
     char* password,
-    subscription_ptr subscription    
+    subscription_ptr subscription,
+    datetime_ptr last_report_date
 ){
-    user_ptr new_user = malloc(sizeof(struct user));
+    struct user* new_user = malloc(sizeof(struct user));
     CHECK_NULL(new_user);
     new_user->id = id;
 
@@ -72,6 +103,7 @@ user_ptr create_user(
     strcpy(new_user->password, password);
 
     new_user->subscription = subscription;
+    new_user->last_report_date = last_report_date;
 
     return new_user;
 }
@@ -188,88 +220,6 @@ subscription_ptr get_user_subscription(user_ptr user) {
     return user->subscription;
 }
 
-/*
-    Saves user data to a file in CSV format.
-
-    Parameters:
-        user: pointer to the user object.
-        f: pointer to an open file for writing.
-
-    Pre-conditions:
-        user and f must not be NULL.
-        File must be open in write or append mode.
-
-    Post-conditions:
-        User data is written to the file in CSV format.
-
-    Returns:
-        None.
-*/
-void save_user_to_file(user_ptr user, FILE* f) {
-    fprintf(f, "%u,%s,%s,%s,%s,%s,%u,\n",
-        user->id,
-        user->CF,
-        user->first_name,
-        user->last_name,
-        user->username,
-        user->password,
-        get_subscription_id(user->subscription)
-    );
-    print_datetime(get_subscription_start_date(user->subscription));
-    print_datetime(get_subscription_end_date(user->subscription));
-}
-
-/*
-    Loads a user from a file containing CSV-formatted data.
-
-    Parameters:
-        f: pointer to an open file for reading.
-
-    Pre-conditions:
-        f must not be NULL.
-        File must contain a valid line of user data.
-
-    Post-conditions:
-        A new user object is created and returned.
-
-    Returns:
-        user_ptr: pointer to the loaded user object, or NULL on error.
-
-user_ptr load_user_from_file(FILE* f) {
-    if (!f) return NULL;
-
-    char line[512];
-    if (!fgets(line, sizeof(line), f)) return NULL;
-
-    uint16_t id, sub_id;
-    char CF[50], first_name[50], last_name[50], username[50], password[50];
-    char start_date[11], end_date[11];
-
-    int parsed = sscanf(
-        line,
-        "%hu,%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%hu,%10[^,],%10[^,\n]",
-        &id,
-        CF,
-        first_name,
-        last_name,
-        username,
-        password,
-        &sub_id,
-        start_date,
-        end_date
-    );
-
-    if (parsed != 9) {
-        fprintf(stderr, "Errore nel parsing della riga utente.\n");
-        return NULL;
-    }
-
-    subscription_ptr sub = create_subscription(sub_id, start_date, end_date);
-    if (!sub) return NULL;
-
-    return create_user(id, CF, first_name, last_name, username, password, sub);
-}
-*/
 /*
     Prints detailed user information to standard output.
 
