@@ -17,13 +17,10 @@ void load_courses(const char *filename, array_ptr* array, hash_map_ptr* hash_map
 user_ptr load_user(const char *filename, linked_list_ptr* booked_list, linked_list_ptr* history_list, hash_map_ptr* hash_map);
 void print_courses(void* element);
 
-void print_course_id(void* element) {
+void print_course_callback(void* element) {
     uint16_t* course_id = (uint16_t*)element;
     printf("Course ID: %hu\n", *course_id);
 }
-void print_history_entry(void* element);
-
-
 
 int main(void) {
     hash_map_ptr hash_map;
@@ -40,13 +37,12 @@ int main(void) {
     print_user(user);
 
     printf("\n--- Booked Courses ---\n");
-    ll_print(booked_list, print_course_id);
+    ll_print(booked_list, print_course_callback);
 
     printf("\n--- Course History ---\n");
     ll_print(history_list, print_frequentation_callback);
-
     
-return 0;
+    return 0;
 }
 
 
@@ -182,7 +178,7 @@ user_ptr load_user(const char *filename, linked_list_ptr* booked_list, linked_li
         exit(1);
     }
     p = line;
-    while (*p) {
+    while (p && *p) {
         char *course_id = str_sep(&p, ",;\n");
         course_ptr course_reference = get_course(*hash_map, (uint16_t)atoi(course_id));
 
@@ -198,17 +194,17 @@ user_ptr load_user(const char *filename, linked_list_ptr* booked_list, linked_li
         exit(1);
     }
     p = line;
-    while (*p) {
+    while (p && *p) {
         char *id_hist = str_sep(&p, ",");
-        if (!id_hist || !*id_hist) break;
+        if (!id_hist || !*id_hist) exit(1);
         uint16_t course_id = (uint16_t)atoi(id_hist);
 
         char *name_hist = str_sep(&p, ",");
-        if (!name_hist) break;
+        if (!name_hist) exit(1);
 
         // leggo times
         char *times_hist = str_sep(&p, ",;\n");
-        if (!times_hist) break;
+        if (!times_hist) exit(1);
         uint16_t times_booked = (uint16_t)atoi(times_hist);
 
         frequentation_ptr frequentation = create_frequentation(course_id, str_dup(name_hist), times_booked);
