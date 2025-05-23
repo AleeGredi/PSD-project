@@ -90,9 +90,11 @@ datetime_ptr get_subscription_end_date(subscription_ptr subscription) {
 void print_subscription(subscription_ptr subscription) {
     printf("Subscription ID: %u\n", subscription->id);
     printf("Start Date: ");
-    print_datetime(subscription->start_date);
+    print_datetime(stdout, subscription->start_date);
+    printf("\n");
     printf("End Date: ");
-    print_datetime(subscription->end_date);
+    print_datetime(stdout, subscription->end_date);
+    printf("\n");
 }
 
 /*

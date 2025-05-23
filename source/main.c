@@ -11,15 +11,31 @@
 
 #define LINE_READ_BUFFER 1024
 #define USERS_PATH "assets/users/"
-#define COURSE_FILENAME "assets/courses.txt"
+#define COURSE_PATH "assets/courses.txt"
 
-void load_courses(const char *filename, array_ptr* array, hash_map_ptr* hash_map);
-user_ptr load_user(const char *filename, linked_list_ptr* booked_list, linked_list_ptr* history_list, hash_map_ptr* hash_map);
-void print_courses(void* element);
+void load_courses(const char *filepath, array_ptr* array, hash_map_ptr* hash_map);
+user_ptr load_user(const char *filepath, linked_list_ptr* booked_list, linked_list_ptr* history_list, hash_map_ptr* hash_map);
+void save_user(const char *filepath, linked_list_ptr booked_list, linked_list_ptr history_list, user_ptr user);
 
-void print_course_callback(void* element) {
+void print_courses(FILE* file, void* element);
+
+void print_course_callback(FILE* file, void* element) {
     uint16_t* course_id = (uint16_t*)element;
-    printf("Course ID: %hu\n", *course_id);
+    fprintf(file, "Course ID: %hu\n", *course_id);
+}
+
+void save_booking_callback(FILE* file, void* element) {
+    course_ptr course = (course_ptr)element;
+    fprintf(file, "%d,", get_course_id(course));
+}
+
+void save_history_callback(FILE* file, void* element) {
+    frequentation_ptr frequentation = (frequentation_ptr)element;
+    fprintf(file, "%d,%s,%d,", 
+        get_frequentation_id(frequentation),
+        get_frequentation_name(frequentation),
+        get_frequentation_times_booked(frequentation)
+    );
 }
 
 int main(void) {
@@ -30,25 +46,25 @@ int main(void) {
     linked_list_ptr history_list;
     
     // Load courses and logged user
-    load_courses(COURSE_FILENAME, &array, &hash_map);
+    load_courses(COURSE_PATH, &array, &hash_map);
     user = load_user("assets/users/marior.txt", &booked_list, &history_list, &hash_map);
 
-    array_print(array, print_courses);
+    array_print(array, stdout, print_courses);
     print_user(user);
-
+    
     printf("\n--- Booked Courses ---\n");
-    ll_print(booked_list, print_course_callback);
+    ll_print(booked_list, stdout, print_course_callback);
 
     printf("\n--- Course History ---\n");
-    ll_print(history_list, print_frequentation_callback);
+    ll_print(history_list, stdout, print_frequentation_callback);
+
+    save_user(USERS_PATH, booked_list, history_list, user);
     
     return 0;
 }
 
-
-
-void load_courses(const char *filename, array_ptr* array, hash_map_ptr* hash_map) {
-    FILE *fp = fopen(filename, "r");
+void load_courses(const char *filepath, array_ptr* array, hash_map_ptr* hash_map) {
+    FILE *fp = fopen(filepath, "r");
     CHECK_NULL(fp);
 
     // Read number of courses
@@ -110,8 +126,8 @@ void load_courses(const char *filename, array_ptr* array, hash_map_ptr* hash_map
     fclose(fp);
 }
 
-user_ptr load_user(const char *filename, linked_list_ptr* booked_list, linked_list_ptr* history_list, hash_map_ptr* hash_map) {
-    FILE *fp = fopen(filename, "r");
+user_ptr load_user(const char *filepath, linked_list_ptr* booked_list, linked_list_ptr* history_list, hash_map_ptr* hash_map) {
+    FILE *fp = fopen(filepath, "r");
     CHECK_NULL(fp);
 
     char line[LINE_READ_BUFFER];
@@ -216,7 +232,36 @@ user_ptr load_user(const char *filename, linked_list_ptr* booked_list, linked_li
     return user;
 }
 
-void print_courses(void* element) {
+void save_user(const char *filepath, linked_list_ptr booked_list, linked_list_ptr history_list, user_ptr user) {
+    char filename[256] = {0};
+    snprintf(filename, "%s%s.txt", filepath, get_user_username(user));
+    FILE* file = fopen(filename, "w");
+    CHECK_NULL(file);
+
+    // save last report date
+    print_datetime(file, get_user_last_report_date(user));
+    fprintf(file, "\n");
+    fprintf(file, "%d,%s,%s,%s,%s,%s,",
+        get_user_id(user),
+        get_user_CF(user),
+        get_user_first_name(user),
+        get_user_last_name(user),
+        get_user_username(user),
+        get_user_password(user)
+    );
+    print_datetime(file, get_subscription_start_date(get_user_subscription(user)));
+    fprintf(file, ",");
+    print_datetime(file, get_subscription_end_date(get_user_subscription(user)));
+    fprintf(file, "\n");
+    ll_print(booked_list, file, save_booking_callback);
+    fprintf(file, "\n");
+    ll_print(history_list, file, save_history_callback);
+
+    fclose(file);
+}
+
+
+void print_courses(FILE* file, void* element) {
     course_ptr course = (course_ptr)element;
     print_course(course);
 }

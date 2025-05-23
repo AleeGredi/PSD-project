@@ -175,7 +175,8 @@ void print_course(course_ptr course) {
     printf("Course ID: %u\n", course->id);
     printf("Name     : %s\n", course->name);
     printf("Datetime : ");
-    print_datetime(course->datetime);
+    print_datetime(stdout, course->datetime);
+    printf("\n");
     printf("Seats    : %u total, %u booked\n",
            course->seats_total,
            course->seats_booked);

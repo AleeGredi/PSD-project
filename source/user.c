@@ -40,10 +40,26 @@ frequentation_ptr create_frequentation(uint16_t course_id, char *course_name, ui
     return new_frequentation;
 }
 
-void print_frequentation_callback(void* element) {
+void print_frequentation_callback(FILE* file, void* element) {
     frequentation_ptr entry = (frequentation_ptr)element;
     printf("History Entry - ID: %hu, Name: %s, Times Booked: %hu\n",
            entry->course_id, entry->course_name, entry->times_booked);
+}
+
+uint16_t get_frequentation_id(frequentation_ptr frequentation) {
+    return frequentation->course_id;
+}
+
+char* get_frequentation_name(frequentation_ptr frequentation) {
+    return frequentation->course_name;
+}
+
+uint16_t get_frequentation_times_booked(frequentation_ptr frequentation) {
+    return frequentation->times_booked;
+}
+
+void set_frequentation_times_booked(frequentation_ptr frequentation, int value) {
+    frequentation->times_booked = value;
 }
 
 /*
@@ -218,6 +234,22 @@ const char* get_user_password(user_ptr user) {
 */
 subscription_ptr get_user_subscription(user_ptr user) {
     return user->subscription;
+}
+
+/*
+    Returns the last_report_date associated with the user.
+
+    Parameters:
+        user: pointer to a valid user object.
+
+    Pre-conditions:
+        user must not be NULL.
+
+    Returns:
+        datetime_ptr: pointer to the user's last_report_date.
+*/
+datetime_ptr get_user_last_report_date(user_ptr user) {
+    return user->last_report_date;
 }
 
 /*

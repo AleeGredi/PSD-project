@@ -182,10 +182,11 @@ void ll_delete_list(linked_list_ptr linked_list, void (*delete_function)(void* e
 
     parameters:
         linked_list: valid (non-NULL) pointer to the list.
+        file: file in which output the print function
         print_function: valid function pointer to print a node's element.
 
     pre-condition:
-        Both parameters must be valid and non-NULL.
+        All parameters must be valid and non-NULL.
 
     post-condition:
         The list is unchanged; output is printed to stdout.
@@ -193,11 +194,11 @@ void ll_delete_list(linked_list_ptr linked_list, void (*delete_function)(void* e
     return:
         Nothing.
 */
-void ll_print(linked_list_ptr linked_list, void (*print_function)(void* element)) {
+void ll_print(linked_list_ptr linked_list,  FILE* file, void (*print_function)(FILE* file, void* element)) {
     struct node* current = linked_list->head;
 
     while (current != NULL) {
-        print_function(current->element);
+        print_function(file, current->element);
         current = current->next;
     }
 }

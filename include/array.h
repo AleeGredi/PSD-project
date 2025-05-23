@@ -2,6 +2,7 @@
 #define ARRAY_H
 
 #include "course.h"
+#include <stdio.h>
 #include <stdint.h>
 
 typedef struct array *array_ptr;
@@ -72,10 +73,12 @@ int search_course(array_ptr array, uint16_t course_id);
 
     parameters:
         array:          pointer to the array (must be valid)
+        file:           file in which output the print function
         print_function: function to print one element (must be valid)
 
     pre-condition:
         array must be valid
+        file must be valid
         print_function must be valid
 
     post-condition:
@@ -85,7 +88,7 @@ int search_course(array_ptr array, uint16_t course_id);
     return:
         None.
 */
-void array_print(array_ptr array, void (*print_function) (void* element));
+void array_print(array_ptr array,  FILE* file, void (*print_function)(FILE* file, void* element));
 
 
 #endif 

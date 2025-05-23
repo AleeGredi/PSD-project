@@ -1,6 +1,8 @@
 #ifndef DATETIME_H
 #define DATETIME_H
 
+#include <stdio.h>
+
 typedef struct datetime *datetime_ptr;
 
 /*
@@ -109,9 +111,10 @@ datetime_ptr create_datetime(int minute, int hour, int day, int month, int year)
 
     parameters:
         datetime: pointer to the datetime object to print.
+        file: file in which output the print function
 
     pre-condition:
-        datetime must be non-NULL and previously allocated.
+        All parameters must be non-NULL and previously allocated.
 
     post-condition:
         Nothing.
@@ -119,7 +122,7 @@ datetime_ptr create_datetime(int minute, int hour, int day, int month, int year)
     return:
         Nothing.
 */
-void print_datetime(datetime_ptr datetime);
+void print_datetime(FILE* file, datetime_ptr datetime);
 
 /*
     Frees all resources associated with a datetime object.
