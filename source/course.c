@@ -79,6 +79,15 @@ uint16_t get_course_id(course_ptr course) {
     return course->id;
 }
 
+int compare_course_id(void* a, void* b) {
+    course_ptr course_a = (course_ptr)a;
+    course_ptr course_b = (course_ptr)b;
+    if (get_course_id(course_a) == get_course_id(course_b)){
+        return 1;
+    }    
+    return 0;
+}
+
 /*
     Returns the course's name.
 
@@ -159,6 +168,11 @@ uint16_t set_course_seats_booked(course_ptr course, int value) {
     course->seats_booked = value;
 }
 
+void save_booking_callback(FILE *file, void *element){
+    course_ptr course = (course_ptr)element;
+    fprintf(file, "%d,", get_course_id(course));
+}
+
 /*
     Prints detailed information about the course, including:
     ID, name, datetime (using print_datetime), seat counts (total and booked)
@@ -184,6 +198,19 @@ void print_course(course_ptr course) {
     printf("Seats    : %u total, %u booked\n",
            course->seats_total,
            course->seats_booked);
+}
+
+void print_course_callback(FILE *file, void *element){
+    course_ptr course = (course_ptr)element;
+    print_course(course);
+}
+
+void print_course_file_callback(FILE *file, void *element){
+    course_ptr course = (course_ptr)element;
+    fprintf(file, "%u,%s,", get_course_id(course), get_course_name(course));
+    print_datetime(file, get_course_datetime(course));
+    fprintf(file, ",%u,%u,",get_course_seats_total(course), get_course_seats_booked(course));
+    fprintf(file, "\n");
 }
 
 /*

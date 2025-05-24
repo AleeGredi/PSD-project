@@ -25,27 +25,9 @@ typedef struct subscription *subscription_ptr;
         subscription_ptr: A pointer to the newly created subscription.
 */
 subscription_ptr create_subscription(
-    uint16_t id,
     datetime_ptr start_date,
     datetime_ptr end_date
 );
-
-/*
-    Function that retrieves the subscription's ID.
-
-    parameters:
-        subscription: Pointer to the subscription.
-
-    pre-condition:
-        subscription must be initialized and not NULL.
-
-    post-condition:
-        No modification to the subscription.
-
-    return:
-        uint16_t: The ID of the subscription.
-*/
-uint16_t get_subscription_id(subscription_ptr subscription);
 
 /*
     Function that retrieves the start date of the subscription.

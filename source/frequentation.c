@@ -22,6 +22,14 @@ frequentation_ptr create_frequentation(uint16_t course_id, char *course_name, ui
     return new_frequentation;
 }
 
+void save_frequentation_callback(FILE *file, void *element){
+    frequentation_ptr frequentation = (frequentation_ptr)element;
+    fprintf(file, "%d,%s,%d,",
+            get_frequentation_id(frequentation),
+            get_frequentation_name(frequentation),
+            get_frequentation_times_booked(frequentation));
+}
+
 void print_frequentation_callback(FILE* file, void* element) {
     frequentation_ptr entry = (frequentation_ptr)element;
     fprintf(file, "History Entry - ID: %hu, Name: %s, Times Booked: %hu\n",

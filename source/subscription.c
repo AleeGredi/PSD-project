@@ -6,7 +6,6 @@
 #include <string.h>
 
 struct subscription {
-    uint16_t id;
     datetime_ptr start_date;
     datetime_ptr end_date;
 };
@@ -25,13 +24,11 @@ struct subscription {
         A pointer to the newly allocated subscription.
 */
 subscription_ptr create_subscription(
-    uint16_t id,
     datetime_ptr start_date,
     datetime_ptr end_date
 ) {
     subscription_ptr new_subscription = malloc(sizeof(struct subscription));
     CHECK_NULL(new_subscription);
-    new_subscription->id = id;
 
     // stored a reference to the datetime_ptr datetime parameter
     new_subscription->start_date = start_date;
@@ -40,19 +37,6 @@ subscription_ptr create_subscription(
     new_subscription->end_date = end_date;
 
     return new_subscription;
-}
-
-/*
-    Returns the ID of the given subscription.
-
-    parameters:
-        subscription: A valid pointer to a subscription object.
-
-    return:
-        The subscription ID.
-*/
-uint16_t get_subscription_id(subscription_ptr subscription) {
-    return subscription->id;
 }
 
 /*
@@ -88,7 +72,6 @@ datetime_ptr get_subscription_end_date(subscription_ptr subscription) {
         subscription: A valid pointer to a subscription object.
 */
 void print_subscription(subscription_ptr subscription) {
-    printf("Subscription ID: %u\n", subscription->id);
     printf("Start Date: ");
     print_datetime(stdout, subscription->start_date);
     printf("\n");

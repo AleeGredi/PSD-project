@@ -8,7 +8,6 @@
 #include <string.h>
 
 struct user {
-    uint16_t id;
     char* CF;
     char* first_name;
     char* last_name;
@@ -42,7 +41,6 @@ struct user {
         user_ptr: pointer to the initialized user object.
 */
 user_ptr create_user(
-    uint16_t id,
     char* CF,
     char* first_name,
     char* last_name,
@@ -53,7 +51,6 @@ user_ptr create_user(
 ){
     struct user* new_user = malloc(sizeof(struct user));
     CHECK_NULL(new_user);
-    new_user->id = id;
 
     new_user->CF = malloc(strlen(CF) + 1);
     CHECK_NULL(new_user->CF);
@@ -79,22 +76,6 @@ user_ptr create_user(
     new_user->last_report_date = last_report_date;
 
     return new_user;
-}
-
-/*
-    Returns the ID of the user.
-
-    Parameters:
-        user: pointer to a valid user object.
-
-    Pre-conditions:
-        user must not be NULL.
-
-    Returns:
-        uint16_t: user ID.
-*/
-uint16_t get_user_id(user_ptr user) {
-    return user->id;
 }
 
 /*
@@ -222,7 +203,6 @@ datetime_ptr get_user_last_report_date(user_ptr user) {
         None.
 */
 void print_user(user_ptr user) {
-    printf("User ID     : %u\n", user->id);
     printf("CF          : %s\n", user->CF);
     printf("First Name  : %s\n", user->first_name);
     printf("Last Name   : %s\n", user->last_name);
