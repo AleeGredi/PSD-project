@@ -37,7 +37,7 @@ int main(void){
     user = load_user(user_filepath, &booked_list, &history_list, &hash_map);
 
     int choice;
-    do{
+    do {
         printf("\n====== MENU ======\n");
         printf("1. Print all available courses\n");
         printf("2. Show my booked courses\n");
@@ -47,92 +47,88 @@ int main(void){
         printf("0. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
-        getchar(); // to remove \n
+        getchar(); // consume newline
 
-        switch (choice){
-        case 1:
-            printf("\n--- Available Courses ---\n");
-            array_print(array, stdout, print_course_callback);
-            break;
+        switch (choice) {
+            case 1:
+                printf("\n--- Available Courses ---\n");
+                array_print(array, stdout, print_course_callback);
+                break;
 
-        case 2:
-            printf("\n--- Booked Courses ---\n");
-            ll_print(booked_list, stdout, print_course_callback);
-            break;
+            case 2:
+                printf("\n--- Booked Courses ---\n");
+                ll_print(booked_list, stdout, print_course_callback);
+                break;
 
-        case 3:
-            printf("\n--- Course History ---\n");
-            ll_print(history_list, stdout, print_frequentation_callback);
-            break;
+            case 3:
+                printf("\n--- Course History ---\n");
+                ll_print(history_list, stdout, print_frequentation_callback);
+                break;
 
-        case 4:{
-            uint16_t course_id;
-            printf("Enter course ID to book: ");
-            scanf("%hu", &course_id);
-            getchar();
+            case 4: {
+                uint16_t course_id;
+                printf("Enter course ID to book: ");
+                scanf("%hu", &course_id);
+                getchar();
 
-            course_ptr course = get_course(hash_map, course_id);
-            if (!course){
-                printf("Course ID not found.\n");
+                course_ptr course = get_course(hash_map, course_id);
+                if (!course) {
+                    printf("Course ID not found.\n");
+                    break;
+                }
+
+                course_ptr temp = create_course(course_id, "", NULL, 0, 0);
+
+                if (ll_search(booked_list, temp, compare_course_id) != -1) {
+                    printf("You have already booked this course.\n");
+                    break;
+                }
+
+                if (get_course_seats_booked(course) >= get_course_seats_total(course)) {
+                    printf("No available seats for this course.\n");
+                    break;
+                }
+
+                ll_add(booked_list, course);
+                set_course_seats_booked(course, get_course_seats_booked(course) + 1);
+
+                int has_ever_been_booked = ll_search(history_list, course, compare_course_id);
+                if (has_ever_been_booked == -1) {
+                    frequentation_ptr new_frequentation = create_frequentation(get_course_id(course), get_course_name(course), 1);
+                    ll_add(history_list, new_frequentation);
+                } else {
+                    frequentation_ptr temp_frequentation = ll_get_at(history_list, has_ever_been_booked);
+                    set_frequentation_times_booked(temp_frequentation, get_frequentation_times_booked(temp_frequentation) + 1);
+                }
+
+                printf("Course booked successfully.\n");
                 break;
             }
 
-            course_ptr temp = create_course(course_id, "", NULL, 0, 0);
-            
-            if (ll_search(booked_list, temp, compare_course_id) != -1){
-                printf("You have already booked this course.\n");
+            case 5:
+                if (compare_datetime(get_subscription_end_date(get_user_subscription(user)), get_datetime()) != 0) {
+                    printf("Subscription is valid.\n");
+                } else {
+                    printf("Subscription has expired.\n");
+                    printf("Do you want to renew it? (TODO).\n");
+                    // TODO: implement renewal
+                }
                 break;
-            }
 
-            if (get_course_seats_booked(course) >= get_course_seats_total(course)){
-                printf("No available seats for this course.\n");
+            case 0:
+                save_user(booked_list, history_list, user);
+                save_course(array);
+                printf("Exiting program and saving courses\n");
                 break;
-            }
 
-            // Add to booked list
-            ll_add(booked_list, course);
-            set_course_seats_booked(course, get_course_seats_booked(course) + 1);
-
-            int has_ever_been_booked = ll_search(history_list, course, compare_course_id);
-            if (has_ever_been_booked == -1){
-                // frequentation doesn't exists case
-                frequentation_ptr new_frequentation = create_frequentation(get_course_id(course), get_course_name(course), 1);
-                ll_add(history_list, new_frequentation);
-            }else{
-                frequentation_ptr temp_frequentation = ll_get_at(history_list, has_ever_been_booked);
-                set_frequentation_times_booked(temp_frequentation, get_frequentation_times_booked(temp_frequentation) + 1);
-            }
-
-            printf("Course booked successfully.\n");
-
-            break;
-        }
-
-        case 5:
-            if (compare_datetime(get_subscription_end_date(get_user_subscription(user)), get_datetime()) != 0){
-                printf("Subscription is valid.\n");
-            }else{
-                printf("Subscription has expired.\n");
-                printf("Do you want to renovate it?.\n");
-                // TODO
-            }
-            break;
-
-        case 0:
-            save_user(booked_list, history_list, user);
-            save_course(array);
-            printf("Exiting program and saving courses\n");
-            break;
-
-        default:
-            printf("Invalid choice. Try again.\n");
-            break;
+            default:
+                printf("Invalid choice. Try again.\n");
+                break;
         }
 
     } while (choice != 0);
 
     free(username);
-    // Add free logic for user, lists, array, hash_map if necessary
 
     return 0;
 }
@@ -181,7 +177,7 @@ char *login_user(){
 
     int field = 0;
     char *token = strtok(line, ",");
-    while (token && field++ < 5)
+    while (token && field++ < 4)
         token = strtok(NULL, ",");
     if (!token){
         fprintf(stderr, "Error in user file.\n");
@@ -295,7 +291,6 @@ user_ptr load_user(const char *filepath, linked_list_ptr *booked_list, linked_li
         exit(1);
     }
     char *p = line;
-    char *id_str = str_sep(&p, ",");
     char *cf_str = str_sep(&p, ",");
     char *first_name_str = str_sep(&p, ",");
     char *last_name_str = str_sep(&p, ",");
@@ -304,20 +299,18 @@ user_ptr load_user(const char *filepath, linked_list_ptr *booked_list, linked_li
     char *sub_start = str_sep(&p, ",");
     char *sub_end = str_sep(&p, ",;\n");
 
-    uint16_t id = (uint16_t)atoi(id_str);
     sscanf(sub_start, "%2d:%2d %2d/%2d/%4d", &hh, &mm, &dd, &mo, &yyyy);
     datetime_ptr sub_start_date = create_datetime(hh, mm, dd, mo, yyyy);
     sscanf(sub_end, "%2d:%2d %2d/%2d/%4d", &hh, &mm, &dd, &mo, &yyyy);
     datetime_ptr sub_end_date = create_datetime(hh, mm, dd, mo, yyyy);
 
-    subscription_ptr subscription = create_subscription(id, sub_start_date, sub_end_date);
+    subscription_ptr subscription = create_subscription(sub_start_date, sub_end_date);
 
     // inizializza le liste
     *booked_list = ll_create();
     *history_list = ll_create();
 
     user_ptr user = create_user(
-        id,
         str_dup(cf_str),
         str_dup(first_name_str),
         str_dup(last_name_str),
@@ -384,8 +377,7 @@ void save_user(linked_list_ptr booked_list, linked_list_ptr history_list, user_p
     // save last report date
     print_datetime(file, get_user_last_report_date(user));
     fprintf(file, "\n");
-    fprintf(file, "%d,%s,%s,%s,%s,%s,",
-            get_user_id(user),
+    fprintf(file, "%s,%s,%s,%s,%s,",
             get_user_CF(user),
             get_user_first_name(user),
             get_user_last_name(user),

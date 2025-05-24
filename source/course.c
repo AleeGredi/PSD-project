@@ -79,6 +79,15 @@ uint16_t get_course_id(course_ptr course) {
     return course->id;
 }
 
+int compare_course_id(void* a, void* b) {
+    course_ptr course_a = (course_ptr)a;
+    course_ptr course_b = (course_ptr)b;
+    if (get_course_id(course_a) == get_course_id(course_b)){
+        return 1;
+    }    
+    return 0;
+}
+
 /*
     Returns the course's name.
 

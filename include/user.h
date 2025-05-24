@@ -32,7 +32,6 @@ typedef struct user *user_ptr;
         user_ptr: pointer to the newly created user.
 */
 user_ptr create_user(
-     uint16_t id,
     char* CF,
     char* first_name,
     char* last_name,
@@ -41,25 +40,6 @@ user_ptr create_user(
     subscription_ptr subscription,
     datetime_ptr last_report_date
 );
-
-/*
-    Returns the user's ID.
-
-    Parameters:
-        user: pointer to the user object.
-
-    Pre-conditions:
-        user must not be NULL.
-
-    Post-conditions:
-        None.
-
-    Returns:
-        uint16_t: user's ID.
-*/
-uint16_t get_user_id(user_ptr user);
-
-bool compare_course_id(void* a, void* b);
 
 /*
     Returns the user's codice fiscale (CF).
