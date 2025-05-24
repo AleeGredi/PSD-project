@@ -27,6 +27,7 @@ int main(void){
     linked_list_ptr booked_list;
     linked_list_ptr history_list;
 
+    registration_user();
     // Load courses and logged user
     load_courses(COURSE_PATH, &array, &hash_map);
 
@@ -374,25 +375,41 @@ void save_user(linked_list_ptr booked_list, linked_list_ptr history_list, user_p
     FILE *file = fopen(filepath, "w");
     CHECK_NULL(file);
 
-    // save last report date
+    // 1) Last report date
     print_datetime(file, get_user_last_report_date(user));
     fprintf(file, "\n");
+
+    // 2) User data
     fprintf(file, "%s,%s,%s,%s,%s,",
-            get_user_CF(user),
-            get_user_first_name(user),
-            get_user_last_name(user),
-            get_user_username(user),
-            get_user_password(user));
+        get_user_CF(user),
+        get_user_first_name(user),
+        get_user_last_name(user),
+        get_user_username(user),
+        get_user_password(user));
     print_datetime(file, get_subscription_start_date(get_user_subscription(user)));
     fprintf(file, ",");
     print_datetime(file, get_subscription_end_date(get_user_subscription(user)));
     fprintf(file, "\n");
-    ll_print(booked_list, file, save_booking_callback);
+
+    // 3) Booked courses (if the user is being created write 0,)
+    if (ll_get_element_count(booked_list) == 0) {
+        fprintf(file, "0,");
+    } else {
+        ll_print(booked_list, file, save_booking_callback);
+    }
     fprintf(file, "\n");
-    ll_print(history_list, file, save_frequentation_callback);
+
+    // 4) Booked history (if the user is being created write "0,0,0,")
+    if (ll_get_element_count(history_list) == 0) {
+        fprintf(file, "0,0,0,");
+    } else {
+        ll_print(history_list, file, save_frequentation_callback);
+    }
+    // (nessun \n finale richiesto)
 
     fclose(file);
 }
+
 
 void save_course(array_ptr array){    
     FILE *file = fopen(COURSE_PATH, "w");
@@ -403,4 +420,102 @@ void save_course(array_ptr array){
     array_print(array, file, print_course_file_callback);
 
     fclose(file);
+}
+
+void registration_user() {
+    char cf[MAX_INPUT_USER];
+    char first_name[MAX_INPUT_USER];
+    char last_name[MAX_INPUT_USER];
+    char username[MAX_INPUT_USER];
+    char password[MAX_INPUT_USER];
+    char filepath[192];
+    FILE *file;
+
+    printf("=== New User Registration ===\n");
+
+    // Read CF
+    printf("Enter CF: ");
+    if (fgets(cf, sizeof(cf), stdin) == NULL) {
+        fprintf(stderr, "Failed to read CF.\n");
+        return;
+    }
+    cf[strcspn(cf, "\n")] = '\0';
+
+    // Read first name
+    printf("Enter first name: ");
+    if (fgets(first_name, sizeof(first_name), stdin) == NULL) {
+        fprintf(stderr, "Failed to read first name.\n");
+        return;
+    }
+    first_name[strcspn(first_name, "\n")] = '\0';
+
+    // Read last name
+    printf("Enter last name: ");
+    if (fgets(last_name, sizeof(last_name), stdin) == NULL) {
+        fprintf(stderr, "Failed to read last name.\n");
+        return;
+    }
+    last_name[strcspn(last_name, "\n")] = '\0';
+
+    // Choose username
+    printf("Choose a username: ");
+    if (fgets(username, sizeof(username), stdin) == NULL) {
+        fprintf(stderr, "Failed to read username.\n");
+        return;
+    }
+    username[strcspn(username, "\n")] = '\0';
+
+    // Check if username already exists
+    snprintf(filepath, sizeof(filepath), "%s%s.txt", USERS_PATH, username);
+    file = fopen(filepath, "r");
+    if (file) {
+        fclose(file);
+        fprintf(stderr, "Error: Username '%s' already exists.\n", username);
+        return;
+    }
+
+    // Read password
+    printf("Choose a password: ");
+    if (fgets(password, sizeof(password), stdin) == NULL) {
+        fprintf(stderr, "Failed to read password.\n");
+        return;
+    }
+    password[strcspn(password, "\n")] = '\0';
+
+    // Prepare subscription dates
+    datetime_ptr now = get_datetime();
+    datetime_ptr start = now;
+    // Set subscription end date to day 30 of current month
+        datetime_ptr end = create_datetime(
+        get_datetime_field(now, "minute"),
+        get_datetime_field(now, "hour"),
+        30,
+        get_datetime_field(now, "month"),
+        get_datetime_field(now, "year")
+    );
+    subscription_ptr sub = create_subscription(start, end);
+
+    // Create user struct
+    user_ptr new_user = create_user(
+        str_dup(cf),
+        str_dup(first_name),
+        str_dup(last_name),
+        str_dup(username),
+        str_dup(password),
+        sub,
+        now
+    );
+
+    // Initialize empty lists
+    linked_list_ptr booked_list = ll_create();
+    linked_list_ptr history_list = ll_create();
+
+    // Save to file
+    save_user(booked_list, history_list, new_user);
+
+    printf("Registration successful. User '%s' created.\n", username);
+
+    delete_user(new_user);
+    ll_delete_list(booked_list, NULL);
+    ll_delete_list(history_list, NULL);
 }
