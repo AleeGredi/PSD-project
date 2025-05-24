@@ -82,6 +82,8 @@ int compare_datetime(datetime_ptr datetime_one, datetime_ptr datetime_two);
 */
 datetime_ptr get_datetime();
 
+
+int get_datetime_field(datetime_ptr datetime, char* field); 
 /*
     Allocates and initializes a new datetime object with the specified
     minute, hour, day, month, and year values.

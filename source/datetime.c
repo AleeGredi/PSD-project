@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 
 struct datetime {
     int minute;
@@ -175,6 +176,14 @@ datetime_ptr get_datetime() {
     return new_datetime;
 }
 
+int get_datetime_field(datetime_ptr datetime, char* field) {
+    if (strcmp(field, "minute")) return datetime->minute;
+    if (strcmp(field, "hour")) return datetime->hour;
+    if (strcmp(field, "day")) return datetime->day;
+    if (strcmp(field, "month")) return datetime->month;
+    if (strcmp(field, "year")) return datetime->year;
+    return -1;
+}
 /*
     Implementation allocates memory for a datetime struct, verifies
     the allocation succeeded, then assigns each struct member from

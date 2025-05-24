@@ -99,7 +99,7 @@ int ll_search(linked_list_ptr linked_list, void* element, bool (*compare_functio
     return -1;
 }
 
-void* ll_get_at(linked_list_ptr linked_list, uint16_t index){
+void** ll_get_at(linked_list_ptr linked_list, uint16_t index){
     if(index > linked_list->element_count) return NULL;
     
     struct node* current = linked_list->head;
@@ -108,7 +108,7 @@ void* ll_get_at(linked_list_ptr linked_list, uint16_t index){
         i++;
         current = current->next;
     }
-    return current->element;
+    return &current->element;
 }
 
 uint16_t ll_get_element_count(linked_list_ptr linked_list) {

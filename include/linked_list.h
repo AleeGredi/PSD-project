@@ -53,7 +53,7 @@ void ll_add(linked_list_ptr linked_list, void* element);
 */
 int ll_search(linked_list_ptr linked_list, void* element, bool (*compare_function)(void* element1, void* element2));
 
-void* ll_get_at(linked_list_ptr linked_list, uint16_t index);
+void** ll_get_at(linked_list_ptr linked_list, uint16_t index);
 
 uint16_t ll_get_element_count(linked_list_ptr linked_list);
 

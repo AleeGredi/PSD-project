@@ -76,9 +76,9 @@ uint16_t get_size(array_ptr array){
     return array->size;
 }
 
-void* get_at(array_ptr array, uint16_t index) {
+void** get_at(array_ptr array, uint16_t index) {
     if (index >= array->size) return NULL;
-    return array->elements[index];
+    return &array->elements[index];
 }
 
 void set_at(array_ptr array, uint16_t index, void* element) {

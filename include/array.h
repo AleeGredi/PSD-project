@@ -49,7 +49,7 @@ void array_add(array_ptr array, void* element);
 
 uint16_t get_size(array_ptr array);
 
-void* get_at(array_ptr array, uint16_t index);
+void** get_at(array_ptr array, uint16_t index);
 
 void set_at(array_ptr array, uint16_t index, void* element);
 
