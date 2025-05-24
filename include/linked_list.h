@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "course.h"
 #include <stdbool.h>
+#include "array.h"
 
 typedef struct linked_list *linked_list_ptr;
 
@@ -51,6 +52,10 @@ void ll_add(linked_list_ptr linked_list, void* element);
         Index (starting from 0) of the matching node if found, -1 otherwise.
 */
 int ll_search(linked_list_ptr linked_list, void* element, bool (*compare_function)(void* element1, void* element2));
+
+uint16_t ll_get_element_count(linked_list_ptr linked_list);
+
+void ll_copy_list_to_array(linked_list_ptr linked_list, array_ptr array);
 
 /*
     Removes the first node from the list that matches the given element.

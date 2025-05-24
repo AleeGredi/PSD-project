@@ -47,6 +47,10 @@ array_ptr array_create(uint16_t size);
 */
 void array_add(array_ptr array, void* element);
 
+void* get_at(array_ptr array, uint16_t index);
+
+void set_at(array_ptr array, uint16_t index, void* element);
+
 /*
     Function that searches for a element by its ID within the array.
 

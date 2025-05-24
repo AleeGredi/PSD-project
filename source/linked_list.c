@@ -99,6 +99,18 @@ int ll_search(linked_list_ptr linked_list, void* element, bool (*compare_functio
     return -1;
 }
 
+uint16_t ll_get_element_count(linked_list_ptr linked_list) {
+    return linked_list->element_count;
+}
+
+void ll_copy_list_to_array(linked_list_ptr linked_list, array_ptr array) {
+    struct node* current = linked_list->head;
+    while(current) {
+        array_add(array, current->element);
+        current = current->next;
+    }
+}
+
 /*
     Removes the first node that matches the given element using
     compare_function and frees its memory using delete_function.

@@ -227,9 +227,13 @@ datetime_ptr create_datetime(int minute, int hour, int day, int month, int year)
         Nothing.
 */
 void print_datetime(FILE* file, datetime_ptr datetime) {
-    fprintf(file, "%d:%d %d/%d/%d", 
-        datetime->minute,
-        datetime->hour,
+    // print time
+    if (datetime->hour < 10) fprintf(file, "0%d:", datetime->hour);
+    else fprintf(file, "%d:", datetime->hour);
+    if (datetime->minute < 10) fprintf(file, "%d0", datetime->minute);
+    else fprintf(file, "%d", datetime->minute);
+    // print date
+    fprintf(file, " %d/%d/%d",
         datetime->day,
         datetime->month,
         datetime->year

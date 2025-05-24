@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define CHECK_NULL(ptr) do { \
     if ((ptr) == NULL) { \

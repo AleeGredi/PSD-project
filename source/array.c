@@ -72,6 +72,16 @@ void array_add(array_ptr array, void* element){
     array->last_element++;
 }
 
+void* get_at(array_ptr array, uint16_t index) {
+    if (index >= array->size) return NULL;
+    return array->elements[index];
+}
+
+void set_at(array_ptr array, uint16_t index, void* element) {
+    if (index >= array->size) return NULL;
+    array->elements[index] = element;
+}
+
 
 /*
     Performs a linear search through the element array, comparing each
