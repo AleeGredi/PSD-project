@@ -59,6 +59,8 @@ user_ptr create_user(
 */
 uint16_t get_user_id(user_ptr user);
 
+bool compare_course_id(void* a, void* b);
+
 /*
     Returns the user's codice fiscale (CF).
 

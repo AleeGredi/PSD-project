@@ -121,6 +121,8 @@ uint16_t get_course_seats_booked(course_ptr course);
 
 uint16_t set_course_seats_booked(course_ptr course, int value);
 
+void save_booking_callback(FILE *file, void *element);
+
 /*
     Prints detailed information about the course.
 
@@ -137,6 +139,10 @@ uint16_t set_course_seats_booked(course_ptr course, int value);
         None.
 */
 void print_course(course_ptr course);
+
+void print_course_callback(FILE *file, void *element);
+
+void print_course_file_callback(FILE *file, void *element);
 
 /*
     Frees the memory allocated for the course, its name, and datetime.

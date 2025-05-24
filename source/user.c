@@ -97,6 +97,12 @@ uint16_t get_user_id(user_ptr user) {
     return user->id;
 }
 
+bool compare_course_id(void* a, void* b) {
+    course_ptr course_a = (course_ptr)a;
+    course_ptr course_b = (course_ptr)b;
+    return get_course_id(course_a) == get_course_id(course_b);
+}
+
 /*
     Returns the codice fiscale of the user.
 
