@@ -155,6 +155,10 @@ uint16_t get_course_seats_booked(course_ptr course) {
     return course->seats_booked;
 }
 
+uint16_t set_course_seats_booked(course_ptr course, int value) {
+    course->seats_booked = value;
+}
+
 /*
     Prints detailed information about the course, including:
     ID, name, datetime (using print_datetime), seat counts (total and booked)

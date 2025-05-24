@@ -119,6 +119,8 @@ uint16_t get_course_seats_total(course_ptr course);
 */
 uint16_t get_course_seats_booked(course_ptr course);
 
+uint16_t set_course_seats_booked(course_ptr course, int value);
+
 /*
     Prints detailed information about the course.
 
