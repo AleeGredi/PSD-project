@@ -177,12 +177,12 @@ datetime_ptr get_datetime() {
 }
 
 int get_datetime_field(datetime_ptr datetime, char* field) {
-    if (strcmp(field, "minute")) return datetime->minute;
-    if (strcmp(field, "hour")) return datetime->hour;
-    if (strcmp(field, "day")) return datetime->day;
-    if (strcmp(field, "month")) return datetime->month;
-    if (strcmp(field, "year")) return datetime->year;
-    return -1;
+    if (strcmp(field, "minute") == 0) return datetime->minute;
+    if (strcmp(field, "hour") == 0) return datetime->hour;
+    if (strcmp(field, "day") == 0) return datetime->day;
+    if (strcmp(field, "month") == 0) return datetime->month;
+    if (strcmp(field, "year") == 0) return datetime->year;
+    return -1; // Invalid field
 }
 /*
     Implementation allocates memory for a datetime struct, verifies
