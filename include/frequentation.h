@@ -10,7 +10,7 @@ frequentation_ptr create_frequentation(uint16_t course_id, char *course_name, ui
 
 void save_frequentation_callback(FILE *file, void *element);
 
-void print_frequentation_callback(FILE* file, void* element);
+void delete_frequentation(void* element);
 
 uint16_t get_frequentation_id(frequentation_ptr frequentation);
 
@@ -19,5 +19,7 @@ char* get_frequentation_name(frequentation_ptr frequentation);
 uint16_t get_frequentation_times_booked(frequentation_ptr frequentation);
 
 void set_frequentation_times_booked(frequentation_ptr frequentation, int value);
+
+void print_frequentation_callback(FILE* file, void* element);
 
 #endif

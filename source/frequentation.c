@@ -30,10 +30,13 @@ void save_frequentation_callback(FILE *file, void *element){
             get_frequentation_times_booked(frequentation));
 }
 
-void print_frequentation_callback(FILE* file, void* element) {
-    frequentation_ptr entry = (frequentation_ptr)element;
-    fprintf(file, "History Entry - ID: %hu, Name: %s, Times Booked: %hu\n",
-           entry->course_id, entry->course_name, entry->times_booked);
+void delete_frequentation(void* element) {
+    if (!element) return;
+    frequentation_ptr f = (frequentation_ptr)element;
+    // libera la stringa del nome corso
+    free(f->course_name);
+    // poi libera la struct
+    free(f);
 }
 
 uint16_t get_frequentation_id(frequentation_ptr frequentation) {
@@ -50,4 +53,22 @@ uint16_t get_frequentation_times_booked(frequentation_ptr frequentation) {
 
 void set_frequentation_times_booked(frequentation_ptr frequentation, int value) {
     frequentation->times_booked = value;
+}
+
+void print_frequentation_callback(FILE* file, void* element) {
+    frequentation_ptr entry = (frequentation_ptr)element;
+
+    // Void entry, skip
+    if (entry->course_id == 0 &&
+    entry->times_booked == 0 &&
+    (entry->course_name == NULL ||
+     strcmp(entry->course_name, "") == 0 ||
+     strcmp(entry->course_name, "0") == 0 ||
+     strcmp(entry->course_name, "\"\"") == 0)) {
+    return;
+    }
+
+    // Valid entry
+    fprintf(file, "History Entry - ID: %hu, Name: %s, Times Booked: %hu\n",
+            entry->course_id, entry->course_name, entry->times_booked);
 }

@@ -59,6 +59,10 @@ uint16_t ll_get_element_count(linked_list_ptr linked_list);
 
 void ll_copy_list_to_array(linked_list_ptr linked_list, array_ptr array);
 
+void ll_delete_at(linked_list_ptr linked_list,
+    uint16_t index,
+    void (*delete_function)(void* element));
+
 /*
     Removes the first node from the list that matches the given element.
 

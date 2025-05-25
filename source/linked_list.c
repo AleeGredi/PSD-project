@@ -123,6 +123,37 @@ void ll_copy_list_to_array(linked_list_ptr linked_list, array_ptr array) {
     }
 }
 
+void ll_delete_at(linked_list_ptr linked_list,
+    uint16_t index,
+    void (*delete_function)(void* element)) {
+
+    if (index >= linked_list->element_count) {
+        return;
+    }
+
+    struct node* current = linked_list->head;
+    struct node* to_delete = NULL;
+
+    if (index == 0) {
+        to_delete = current;
+        linked_list->head = current->next;
+    } else {
+        // Traverse to node just before the one to delete
+        for (uint16_t i = 0; i < index - 1; i++) {
+            current = current->next;
+        }
+        to_delete = current->next;
+        current->next = to_delete->next;
+    }
+
+    // Free element and node
+    if (delete_function) {
+        delete_function(to_delete->element);
+    }
+    free(to_delete);
+    linked_list->element_count--;
+}
+
 /*
     Removes the first node that matches the given element using
     compare_function and frees its memory using delete_function.

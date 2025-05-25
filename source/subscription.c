@@ -65,6 +65,19 @@ datetime_ptr get_subscription_end_date(subscription_ptr subscription) {
     return subscription->end_date;
 }
 
+void set_subscription_start_date(subscription_ptr subscription, datetime_ptr start_date) {
+    subscription->start_date = start_date;
+}
+
+void set_subscription_end_date(subscription_ptr subscription, datetime_ptr end_date) {
+    subscription->end_date = end_date;
+}
+
+void set_subscription_renew(subscription_ptr subscription, datetime_ptr start_date, datetime_ptr end_date){
+    set_subscription_start_date(subscription, start_date);    
+    set_subscription_end_date(subscription, end_date);
+}
+
 /*
     Prints subscription information, including ID, start date, and end date.
 

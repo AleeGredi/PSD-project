@@ -63,6 +63,12 @@ datetime_ptr get_subscription_start_date(subscription_ptr subscription);
 */
 datetime_ptr get_subscription_end_date(subscription_ptr subscription);
 
+void set_subscription_start_date(subscription_ptr subscription, datetime_ptr start_date);
+
+void set_subscription_end_date(subscription_ptr subscription, datetime_ptr end_date);
+
+void set_subscription_renew(subscription_ptr subscription, datetime_ptr start_date, datetime_ptr end_date);
+
 /*
     Function that prints the subscription's information.
 

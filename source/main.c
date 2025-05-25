@@ -19,6 +19,8 @@ char *login_user();
 void load_courses(const char *filepath, array_ptr *array, hash_map_ptr *hash_map);
 user_ptr load_user(const char *filepath, linked_list_ptr *booked_list, linked_list_ptr *history_list, hash_map_ptr *hash_map);
 void save_user(linked_list_ptr booked_list, linked_list_ptr history_list, user_ptr user);
+void registration_user();
+void save_course(array_ptr array);
 
 int main(void){
     hash_map_ptr hash_map;
@@ -44,7 +46,8 @@ int main(void){
         printf("2. Show my booked courses\n");
         printf("3. Show course history\n");
         printf("4. Book a course\n");
-        printf("5. Check if subscription is valid\n");
+        printf("5. Cancel a booked course\n");
+        printf("6. Check if subscription is valid\n");
         printf("0. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
@@ -67,6 +70,11 @@ int main(void){
                 break;
 
             case 4: {
+                if (compare_datetime(get_datetime(), get_subscription_end_date(get_user_subscription(user))) == 1){
+                    printf("Subscription has expired.\n");
+                    break;
+                }
+
                 uint16_t course_id;
                 printf("Enter course ID to book: ");
                 scanf("%hu", &course_id);
@@ -82,8 +90,10 @@ int main(void){
 
                 if (ll_search(booked_list, temp, compare_course_id) != -1) {
                     printf("You have already booked this course.\n");
+                    delete_course(temp);
                     break;
                 }
+                delete_course(temp);
 
                 if (get_course_seats_booked(course) >= get_course_seats_total(course)) {
                     printf("No available seats for this course.\n");
@@ -106,13 +116,69 @@ int main(void){
                 break;
             }
 
-            case 5:
-                if (compare_datetime(get_subscription_end_date(get_user_subscription(user)), get_datetime()) != 0) {
+            case 5: {
+                uint16_t course_id;
+                printf("Enter course ID to cancel: ");
+                scanf("%hu", &course_id);
+                getchar();
+
+                // 1) Search if the ID is in the history list (so if booked)
+                int booked_idx = ll_search(booked_list, &course_id, compare_course_id);
+                if (booked_idx == -1) {
+                    printf("You have not booked this course.\n");
+                    break;
+                }
+
+                // 2) Get pointer and decrements seats_booked
+                course_ptr course = *(course_ptr*)ll_get_at(booked_list, booked_idx);
+                ll_delete_at(booked_list, booked_idx, NULL);
+                // Decremento i posti prenotati
+                set_course_seats_booked(course,
+                    get_course_seats_booked(course) - 1);
+
+                // 3) Decrements frequentation times_booked
+                int history_idx = ll_search(history_list, course, compare_course_id);
+                if (history_idx != -1) {
+                    frequentation_ptr freq = *(frequentation_ptr*)
+                        ll_get_at(history_list, history_idx);
+                    int new_times = get_frequentation_times_booked(freq) - 1;
+                    set_frequentation_times_booked(freq, new_times);
+
+                    // 4) remove freq if times_booked == 0 
+                    if (new_times <= 0) {
+                        ll_delete_at(history_list, history_idx, delete_frequentation);
+                    }
+                }
+
+                printf("Course cancellation successful.\n");
+                break;
+            }
+
+            case 6:
+                if (compare_datetime(get_datetime(), get_subscription_end_date(get_user_subscription(user))) < 1) {
                     printf("Subscription is valid.\n");
                 } else {
                     printf("Subscription has expired.\n");
-                    printf("Do you want to renew it? (TODO).\n");
-                    // TODO: implement renewal
+                    char sub_renew;
+                    printf("Do you want to renew it? (y or n): ");
+                    scanf(" %c", &sub_renew);
+                    getchar();
+
+                    if (sub_renew == 'y' || sub_renew == 'Y') {
+                        datetime_ptr now = get_datetime();
+                        datetime_ptr start_renewal = now;
+                        datetime_ptr end_renewal = create_datetime(
+                            get_datetime_field(now, "minute"),
+                            get_datetime_field(now, "hour"),
+                            30,
+                            get_datetime_field(now, "month"),
+                            get_datetime_field(now, "year")
+                        );
+                        set_subscription_renew(get_user_subscription(user), start_renewal, end_renewal);
+                        printf("Subscription renewed.\n");
+                    } else {
+                        printf("Subscription will not be renewed.\n");
+                    }
                 }
                 break;
 
@@ -133,6 +199,7 @@ int main(void){
 
     return 0;
 }
+
 
 
 
@@ -399,17 +466,15 @@ void save_user(linked_list_ptr booked_list, linked_list_ptr history_list, user_p
     }
     fprintf(file, "\n");
 
-    // 4) Booked history (if the user is being created write "0,0,0,")
+    // 4) Booked history (if the user is being created write "0,,0,")
     if (ll_get_element_count(history_list) == 0) {
-        fprintf(file, "0,0,0,");
+        fprintf(file, "0,"",0,");
     } else {
         ll_print(history_list, file, save_frequentation_callback);
     }
-    // (nessun \n finale richiesto)
 
     fclose(file);
 }
-
 
 void save_course(array_ptr array){    
     FILE *file = fopen(COURSE_PATH, "w");
