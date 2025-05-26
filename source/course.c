@@ -103,7 +103,7 @@ int compare_course_id(void* a, void* b) {
     Returns:
         Pointer to the null-terminated name string.
 */
-const char* get_course_name(course_ptr course) {
+char* get_course_name(course_ptr course) {
     return course->name;
 }
 

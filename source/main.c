@@ -9,32 +9,6 @@
 #include "course.h"
 #include "user.h"
 #include "utils.h"
-
-#define LINE_READ_BUFFER 1024
-#define MAX_INPUT_USER 128
-#define USERS_PATH "assets/users/"
-#define COURSE_PATH "assets/courses.txt"
-#define REPORT_PATH "assets/report/"
-
-char *login_user();
-void load_courses(const char *filepath, array_ptr *array, hash_map_ptr *hash_map);
-user_ptr load_user(const char *filepath, linked_list_ptr *booked_list, linked_list_ptr *history_list, hash_map_ptr *hash_map);
-void save_user(linked_list_ptr booked_list, linked_list_ptr history_list, user_ptr user);
-void registration_user();
-void save_course(array_ptr array);
-void report(user_ptr user, linked_list_ptr frequentation_linked_list);
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "array.h"
-#include "linked_list.h"
-#include "hash_map.h"
-#include "frequentation.h"
-#include "course.h"
-#include "user.h"
-#include "utils.h"
 #include "errno.h"
 
 #define LINE_READ_BUFFER 1024

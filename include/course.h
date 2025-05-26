@@ -66,9 +66,9 @@ int compare_course_id(void* a, void* b);
         None.
 
     Returns:
-        const char*: name of the course.
+        char*: name of the course.
 */
-const char* get_course_name(course_ptr course);
+char* get_course_name(course_ptr course);
 
 /*
     Returns the datetime of the course.
