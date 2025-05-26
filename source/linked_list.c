@@ -84,7 +84,7 @@ void ll_add(linked_list_ptr linked_list, void* element) {
     return:
         Index (starting from 0) of the first matching node, or -1 if not found.
 */
-int ll_search(linked_list_ptr linked_list, void* element, bool (*compare_function)(void* element1, void* element2)) {
+int ll_search(linked_list_ptr linked_list, void* element, int (*compare_function)(void* element1, void* element2)) {
     int index = 0;
     struct node* current = linked_list->head;
 

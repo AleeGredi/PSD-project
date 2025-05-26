@@ -121,7 +121,7 @@ uint16_t get_course_seats_total(course_ptr course);
 */
 uint16_t get_course_seats_booked(course_ptr course);
 
-uint16_t set_course_seats_booked(course_ptr course, int value);
+void set_course_seats_booked(course_ptr course, int value);
 
 void save_booking_callback(FILE *file, void *element);
 

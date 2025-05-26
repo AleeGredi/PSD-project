@@ -51,7 +51,7 @@ void ll_add(linked_list_ptr linked_list, void* element);
     return:
         Index (starting from 0) of the matching node if found, -1 otherwise.
 */
-int ll_search(linked_list_ptr linked_list, void* element, bool (*compare_function)(void* element1, void* element2));
+int ll_search(linked_list_ptr linked_list, void* element, int (*compare_function)(void* element1, void* element2));
 
 void** ll_get_at(linked_list_ptr linked_list, uint16_t index);
 

@@ -157,6 +157,8 @@ subscription_ptr get_user_subscription(user_ptr user);
 */
 datetime_ptr get_user_last_report_date(user_ptr user);
 
+void set_user_last_report_date(user_ptr user, datetime_ptr last_report);
+
 /*
     Prints user information to standard output.
 

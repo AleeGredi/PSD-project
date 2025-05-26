@@ -167,8 +167,8 @@ datetime_ptr get_datetime() {
     // Convert to local time format
     local_time = localtime(&current_time);
 
-    new_datetime->minute = local_time->tm_min + 1; // tm_min is 0-59
-    new_datetime->hour   = local_time->tm_hour + 1; // tm_hour is 0-23
+    new_datetime->minute = local_time->tm_min; 
+    new_datetime->hour   = local_time->tm_hour;
     new_datetime->day    = local_time->tm_mday;
     new_datetime->month  = local_time->tm_mon + 1;  // tm_mon is 0–11
     new_datetime->year   = local_time->tm_year + 1900; // tm_year is years since 1900

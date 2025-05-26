@@ -190,6 +190,12 @@ datetime_ptr get_user_last_report_date(user_ptr user) {
     return user->last_report_date;
 }
 
+void set_user_last_report_date(user_ptr user, datetime_ptr last_report) {
+    datetime_ptr to_delete = user->last_report_date;
+    free(to_delete);
+    user->last_report_date = last_report;
+}
+
 /*
     Prints detailed user information to standard output.
 

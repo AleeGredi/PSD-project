@@ -82,7 +82,7 @@ void** get_at(array_ptr array, uint16_t index) {
 }
 
 void set_at(array_ptr array, uint16_t index, void* element) {
-    if (index >= array->size) return NULL;
+    if (index >= array->size) return;
     array->elements[index] = element;
 }
 

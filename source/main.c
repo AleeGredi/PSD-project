@@ -35,6 +35,7 @@ void report(user_ptr user, linked_list_ptr frequentation_linked_list);
 #include "course.h"
 #include "user.h"
 #include "utils.h"
+#include "errno.h"
 
 #define LINE_READ_BUFFER 1024
 #define MAX_INPUT_USER 128
@@ -98,6 +99,7 @@ int main(void){
         printf("4. Book a course\n");
         printf("5. Cancel a booked course\n");
         printf("6. Check if subscription is valid\n");
+        printf("7. Show last report\n");
         printf("0. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
@@ -157,8 +159,8 @@ int main(void){
                     frequentation_ptr new_frequentation = create_frequentation(get_course_id(course), get_course_name(course), 1);
                     ll_add(history_list, new_frequentation);
                 } else {
-                    frequentation_ptr temp_frequentation = ll_get_at(history_list, has_ever_been_booked);
-                    set_frequentation_times_booked(temp_frequentation, get_frequentation_times_booked(temp_frequentation) + 1);
+                    frequentation_ptr* temp_frequentation = (frequentation_ptr*)ll_get_at(history_list, has_ever_been_booked);
+                    set_frequentation_times_booked(*temp_frequentation, get_frequentation_times_booked(*temp_frequentation) + 1);
                 }
 
                 printf("Course booked successfully.\n");
@@ -222,10 +224,52 @@ int main(void){
                     }
                 }
                 break;
+            
+            case 7:
+                char filepath[192] = {0};
+                snprintf(filepath, sizeof(filepath), "%s%s_report.txt", REPORT_PATH, get_user_username(user));
+                FILE *fp = fopen(filepath, "rb");
+                if (!fp) {
+                    printf("Wait next moth for the report to be generated");
+                    break;
+                }
 
+                // Seek to end to determine file size
+                if (fseek(fp, 0, SEEK_END) != 0) {
+                    perror("fseek");
+                    fclose(fp);
+                    exit(1);
+                }
+                long sz = ftell(fp);
+                if (sz < 0) {
+                    perror("ftell");
+                    fclose(fp);
+                    exit(1);
+                }
+                rewind(fp);  // go back to beginning
+
+                // Allocate buffer (size + 1 for null terminator)
+                char *buf = malloc((size_t)sz + 1);
+                CHECK_NULL(buf);
+
+                // Read the entire file in one go
+                size_t nread = fread(buf, 1, (size_t)sz, fp);
+                if (nread != (size_t)sz) {
+                    if (ferror(fp)) perror("fread");
+                    else           fprintf(stderr, "Unexpected EOF\n");
+                    free(buf);
+                    fclose(fp);
+                    exit(1);
+                }
+                buf[nread] = '\0';  // null-terminate
+
+                fclose(fp);
+
+                printf("Here is you montly report:\n%s\n", buf);
+
+                free(buf);
+                break;
             case 0:
-                save_user(booked_list, history_list, user);
-                save_course(array);
                 printf("Exiting program and saving courses\n");
                 break;
 
@@ -236,6 +280,16 @@ int main(void){
 
     } while (choice != 0);
 
+    report(user, history_list);
+
+    save_user(booked_list, history_list, user);
+    save_course(array);
+    
+    array_delete(array, NULL);
+    ll_delete_list(booked_list, NULL);
+    ll_delete_list(history_list, NULL);
+    delete_hash_map(hash_map, true);
+    
     return 0;
 }
 
@@ -649,15 +703,20 @@ void report(user_ptr user, linked_list_ptr frequentation_linked_list) {
     for (int i = 0; i < array_size - 1; i++) {
         // After each full pass, the largest element among the first (n-i) is at position n-i-1
         for (int j = 0; j < array_size - i - 1; j++) {
-            frequentation_ptr element1 = (frequentation_ptr)get_at(temp_array, j);
-            frequentation_ptr element2 = (frequentation_ptr)get_at(temp_array, j + 1);
-            if (get_frequentation_times_booked(element1) > get_frequentation_times_booked(element2)) {
-                ptr_swap(element1, element2);
+            frequentation_ptr* element1 = (frequentation_ptr*)get_at(temp_array, j);
+            frequentation_ptr* element2 = (frequentation_ptr*)get_at(temp_array, j + 1);
+            if (get_frequentation_times_booked(*element1) < get_frequentation_times_booked(*element2)) {
+                ptr_swap((void**)element1, (void**)element2);
             }
         }
     }
+
+    // set new last report datetime
+    set_user_last_report_date(user, current_datetime);
+
     // print datetime for this report
     print_datetime(file, current_datetime);
+    fprintf(file, "\n");
 
     int i = 0;
     frequentation_ptr* fr;
@@ -667,13 +726,13 @@ void report(user_ptr user, linked_list_ptr frequentation_linked_list) {
         print_frequentation_callback(file, *fr);
         i++;
     }
-    fprintf(file, "Other courses:");
+    fprintf(file, "Other courses:\n");
     while(i < array_size) {
         fr = (frequentation_ptr*)get_at(temp_array, i);
         print_frequentation_callback(file, *fr);
         i++;
     }
-    delete_datetime(current_datetime);
-    // TODO: delete temp_array
+
+    array_delete(temp_array, NULL);
     fclose(file);
 }

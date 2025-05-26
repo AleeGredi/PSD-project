@@ -164,7 +164,7 @@ uint16_t get_course_seats_booked(course_ptr course) {
     return course->seats_booked;
 }
 
-uint16_t set_course_seats_booked(course_ptr course, int value) {
+void set_course_seats_booked(course_ptr course, int value) {
     course->seats_booked = value;
 }
 
