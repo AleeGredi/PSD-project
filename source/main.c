@@ -24,22 +24,70 @@ void registration_user();
 void save_course(array_ptr array);
 void report(user_ptr user, linked_list_ptr frequentation_linked_list);
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "array.h"
+#include "linked_list.h"
+#include "hash_map.h"
+#include "frequentation.h"
+#include "course.h"
+#include "user.h"
+#include "utils.h"
+
+#define LINE_READ_BUFFER 1024
+#define MAX_INPUT_USER 128
+#define USERS_PATH "assets/users/"
+#define COURSE_PATH "assets/courses.txt"
+#define REPORT_PATH "assets/report/"
+
+char *login_user();
+void load_courses(const char *filepath, array_ptr *array, hash_map_ptr *hash_map);
+user_ptr load_user(const char *filepath, linked_list_ptr *booked_list, linked_list_ptr *history_list, hash_map_ptr *hash_map);
+void save_user(linked_list_ptr booked_list, linked_list_ptr history_list, user_ptr user);
+void registration_user();
+void save_course(array_ptr array);
+void report(user_ptr user, linked_list_ptr frequentation_linked_list);
+
 int main(void){
     hash_map_ptr hash_map;
     array_ptr array;
-    user_ptr user;
-    linked_list_ptr booked_list;
-    linked_list_ptr history_list;
+    user_ptr user = NULL;
+    linked_list_ptr booked_list = NULL;
+    linked_list_ptr history_list = NULL;
 
-    registration_user();
-    // Load courses and logged user
+    int action = 0;
+    printf("Select action:\n");
+    printf("1. Register new user\n");
+    printf("2. Login\n");
+    printf("Enter choice (1 or 2): ");
+    if (scanf("%d", &action) != 1) {
+        fprintf(stderr, "Invalid input. Exiting.\n");
+        return 1;
+    }
+    getchar(); // consume newline
+
+    if (action == 1) {
+        registration_user();
+        // After registration, proceed to login
+    }
+
+    char *username = NULL;
+    while (!username) {
+        username = login_user();
+        if (!username) {
+            printf("Login failed. Try again.\n");
+        }
+    }
+
+    // Load courses and logged user data
     load_courses(COURSE_PATH, &array, &hash_map);
 
-    char *username = login_user();
-    CHECK_NULL(username);
     char user_filepath[192] = {0};
     snprintf(user_filepath, sizeof(user_filepath), "%s%s.txt", USERS_PATH, username);
     user = load_user(user_filepath, &booked_list, &history_list, &hash_map);
+    free(username);
 
     int choice;
     do {
@@ -72,7 +120,7 @@ int main(void){
                 break;
 
             case 4: {
-                if (compare_datetime(get_datetime(), get_subscription_end_date(get_user_subscription(user))) == 1){
+                if (compare_datetime(get_datetime(), get_subscription_end_date(get_user_subscription(user))) == 1) {
                     printf("Subscription has expired.\n");
                     break;
                 }
@@ -89,7 +137,6 @@ int main(void){
                 }
 
                 course_ptr temp = create_course(course_id, "", NULL, 0, 0);
-
                 if (ll_search(booked_list, temp, compare_course_id) != -1) {
                     printf("You have already booked this course.\n");
                     delete_course(temp);
@@ -124,29 +171,21 @@ int main(void){
                 scanf("%hu", &course_id);
                 getchar();
 
-                // 1) Search if the ID is in the history list (so if booked)
                 int booked_idx = ll_search(booked_list, &course_id, compare_course_id);
                 if (booked_idx == -1) {
                     printf("You have not booked this course.\n");
                     break;
                 }
 
-                // 2) Get pointer and decrements seats_booked
                 course_ptr course = *(course_ptr*)ll_get_at(booked_list, booked_idx);
                 ll_delete_at(booked_list, booked_idx, NULL);
-                // Decremento i posti prenotati
-                set_course_seats_booked(course,
-                    get_course_seats_booked(course) - 1);
+                set_course_seats_booked(course, get_course_seats_booked(course) - 1);
 
-                // 3) Decrements frequentation times_booked
                 int history_idx = ll_search(history_list, course, compare_course_id);
                 if (history_idx != -1) {
-                    frequentation_ptr freq = *(frequentation_ptr*)
-                        ll_get_at(history_list, history_idx);
+                    frequentation_ptr freq = *(frequentation_ptr*)ll_get_at(history_list, history_idx);
                     int new_times = get_frequentation_times_booked(freq) - 1;
                     set_frequentation_times_booked(freq, new_times);
-
-                    // 4) remove freq if times_booked == 0 
                     if (new_times <= 0) {
                         ll_delete_at(history_list, history_idx, delete_frequentation);
                     }
@@ -197,8 +236,6 @@ int main(void){
 
     } while (choice != 0);
 
-    free(username);
-
     return 0;
 }
 
@@ -207,6 +244,8 @@ char *login_user(){
     size_t len = 0, line_len = 0;
     char password[MAX_INPUT_USER];
     char stored_password[MAX_INPUT_USER];
+
+    printf("=== User Login ===\n");
 
     printf("Enter username: ");
     if (getline(&username, &len, stdin) == -1){
@@ -367,9 +406,9 @@ user_ptr load_user(const char *filepath, linked_list_ptr *booked_list, linked_li
     char *sub_end = str_sep(&p, ",;\n");
 
     sscanf(sub_start, "%2d:%2d %2d/%2d/%4d", &hh, &mm, &dd, &mo, &yyyy);
-    datetime_ptr sub_start_date = create_datetime(hh, mm, dd, mo, yyyy);
+    datetime_ptr sub_start_date = create_datetime(mm, hh, dd, mo, yyyy);
     sscanf(sub_end, "%2d:%2d %2d/%2d/%4d", &hh, &mm, &dd, &mo, &yyyy);
-    datetime_ptr sub_end_date = create_datetime(hh, mm, dd, mo, yyyy);
+    datetime_ptr sub_end_date = create_datetime(mm, hh, dd, mo, yyyy);
 
     subscription_ptr subscription = create_subscription(sub_start_date, sub_end_date);
 
