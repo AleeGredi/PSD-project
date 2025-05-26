@@ -15,4 +15,6 @@ char *str_dup(const char *s);
 
 char *str_sep(char **stringp, const char *delim);
 
+void ptr_swap(void **pp1, void **pp2);
+
 #endif

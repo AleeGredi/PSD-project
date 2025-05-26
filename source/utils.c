@@ -22,3 +22,10 @@ char *str_sep(char **stringp, const char *delim) {
     }
     return start;
 }
+
+// Swap two pointers
+void ptr_swap(void **pp1, void **pp2) {
+    void *tmp = *pp1;
+    *pp1 = *pp2;
+    *pp2 = tmp;
+}

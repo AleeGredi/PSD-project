@@ -14,6 +14,7 @@
 #define MAX_INPUT_USER 128
 #define USERS_PATH "assets/users/"
 #define COURSE_PATH "assets/courses.txt"
+#define REPORT_PATH "assets/report/"
 
 char *login_user();
 void load_courses(const char *filepath, array_ptr *array, hash_map_ptr *hash_map);
@@ -21,6 +22,7 @@ user_ptr load_user(const char *filepath, linked_list_ptr *booked_list, linked_li
 void save_user(linked_list_ptr booked_list, linked_list_ptr history_list, user_ptr user);
 void registration_user();
 void save_course(array_ptr array);
+void report(user_ptr user, linked_list_ptr frequentation_linked_list);
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,6 +40,7 @@ void save_course(array_ptr array);
 #define MAX_INPUT_USER 128
 #define USERS_PATH "assets/users/"
 #define COURSE_PATH "assets/courses.txt"
+#define REPORT_PATH "assets/report/"
 
 char *login_user();
 void load_courses(const char *filepath, array_ptr *array, hash_map_ptr *hash_map);
@@ -45,8 +48,9 @@ user_ptr load_user(const char *filepath, linked_list_ptr *booked_list, linked_li
 void save_user(linked_list_ptr booked_list, linked_list_ptr history_list, user_ptr user);
 void registration_user();
 void save_course(array_ptr array);
+void report(user_ptr user, linked_list_ptr frequentation_linked_list);
 
-int main(void) {
+int main(void){
     hash_map_ptr hash_map;
     array_ptr array;
     user_ptr user = NULL;
@@ -234,8 +238,6 @@ int main(void) {
 
     return 0;
 }
-
-
 
 char *login_user(){
     char *username = NULL, *line = NULL;
@@ -619,4 +621,59 @@ void registration_user() {
     delete_user(new_user);
     ll_delete_list(booked_list, NULL);
     ll_delete_list(history_list, NULL);
+}
+
+void report(user_ptr user, linked_list_ptr frequentation_linked_list) {
+    datetime_ptr last_report_datetime = get_user_last_report_date(user);
+    datetime_ptr current_datetime = get_datetime();
+    
+    int flag_year = get_datetime_field(last_report_datetime, "year") 
+        <= 
+        get_datetime_field(current_datetime, "year");
+    int flag_month = get_datetime_field(last_report_datetime, "month") 
+        <
+        get_datetime_field(current_datetime, "month");
+    
+    if (!flag_year || !flag_month) return;
+    
+    char filename[256] = {0};
+    snprintf(filename, sizeof(filename), "%s%s_report.txt", REPORT_PATH, get_user_username(user));
+    // create flag
+    FILE* file = fopen(filename, "w");
+    CHECK_NULL(file);
+
+    int array_size = ll_get_element_count(frequentation_linked_list);
+    array_ptr temp_array = array_create(array_size);
+    ll_copy_list_to_array(frequentation_linked_list, temp_array);
+    
+    for (int i = 0; i < array_size - 1; i++) {
+        // After each full pass, the largest element among the first (n-i) is at position n-i-1
+        for (int j = 0; j < array_size - i - 1; j++) {
+            frequentation_ptr element1 = (frequentation_ptr)get_at(temp_array, j);
+            frequentation_ptr element2 = (frequentation_ptr)get_at(temp_array, j + 1);
+            if (get_frequentation_times_booked(element1) > get_frequentation_times_booked(element2)) {
+                ptr_swap(element1, element2);
+            }
+        }
+    }
+    // print datetime for this report
+    print_datetime(file, current_datetime);
+
+    int i = 0;
+    frequentation_ptr* fr;
+    fprintf(file, "Top tree courses followed:\n");
+    while(i < array_size && i < 3) {
+        fr = (frequentation_ptr*)get_at(temp_array, i);
+        print_frequentation_callback(file, *fr);
+        i++;
+    }
+    fprintf(file, "Other courses:");
+    while(i < array_size) {
+        fr = (frequentation_ptr*)get_at(temp_array, i);
+        print_frequentation_callback(file, *fr);
+        i++;
+    }
+    delete_datetime(current_datetime);
+    // TODO: delete temp_array
+    fclose(file);
 }
