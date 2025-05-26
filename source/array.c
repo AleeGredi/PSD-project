@@ -143,3 +143,18 @@ void array_print(array_ptr array,  FILE* file, void (*print_function)(FILE* file
         print_function(file, array->elements[i]);
     }
 }
+
+void array_delete(array_ptr array, void (*delete_function)(void* element)) {
+    if (!delete_function) {
+        free(array->elements);
+        free(array);
+        return;
+    }
+
+    for(int i = 0; i < array->size; i++) {
+        delete_function(array->elements[i]);
+    }
+
+    free(array->elements);
+    free(array);
+}

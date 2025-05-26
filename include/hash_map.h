@@ -18,6 +18,6 @@ void insert_course(hash_map_ptr map, uint16_t key, course_ptr value);
 course_ptr get_course(hash_map_ptr map, uint16_t key);
 
 // Free the entire map
-void delete_hash_map(hash_map_ptr map);
+void delete_hash_map(hash_map_ptr map, bool delete_elements);
 
 #endif

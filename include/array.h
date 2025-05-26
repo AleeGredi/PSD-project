@@ -97,4 +97,6 @@ int search_course(array_ptr array, uint16_t course_id);
 void array_print(array_ptr array,  FILE* file, void (*print_function)(FILE* file, void* element));
 
 
+void array_delete(array_ptr array, void (*delete_function)(void* element));
+
 #endif 

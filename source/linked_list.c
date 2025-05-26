@@ -220,8 +220,13 @@ void ll_delete_element(linked_list_ptr linked_list,
         Nothing.
 */
 void ll_delete_list(linked_list_ptr linked_list, void (*delete_function)(void* element)) {
+    if (!delete_function) {
+        free(linked_list);
+        return;
+    }
+    
     struct node* current = linked_list->head;
-
+    
     while (current != NULL) {
         struct node* to_delete = current;
         current = current->next;

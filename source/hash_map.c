@@ -87,8 +87,14 @@ course_ptr get_course(hash_map_ptr map, uint16_t key) {
     return NULL;
 }
 
-void delete_hash_map(hash_map_ptr map) {
+void delete_hash_map(hash_map_ptr map, bool delete_elements) {
     CHECK_NULL(map);
+
+    if (!delete_elements) {
+        free(map->table);
+        free(map);
+        return;
+    }
 
     for (uint16_t i = 0; i < map->size; ++i) {
         if (map->table[i].is_occupied) {
