@@ -7,22 +7,21 @@
 typedef struct subscription *subscription_ptr;
 
 /*
-    Function that creates a new subscription.
+    Creates a new subscription with a start and end date.
 
-    parameters:
-        id: Unique identifier for the subscription.
-        start_date: Pointer to a datetime representing the subscription's start date.
-        end_date: Pointer to a datetime representing the subscription's end date.
+    Parameters:
+        start_date: pointer to a datetime representing the start of the subscription.
+        end_date: pointer to a datetime representing the end of the subscription.
 
-    pre-condition:
-        start_date and end_date must be valid, non-NULL datetime_ptr values.
-        end_date must not be earlier than start_date.
+    Pre-conditions:
+        start_date and end_date must be non-NULL.
+        The datetime values must be valid and managed externally.
 
-    post-condition:
-        A new subscription is created and returned.
+    Post-conditions:
+        A new subscription object is allocated and initialized.
 
-    return:
-        subscription_ptr: A pointer to the newly created subscription.
+    Returns:
+        subscription_ptr: pointer to the newly created subscription.
 */
 subscription_ptr create_subscription(
     datetime_ptr start_date,
@@ -30,76 +29,110 @@ subscription_ptr create_subscription(
 );
 
 /*
-    Function that retrieves the start date of the subscription.
+    Retrieves the start date of the subscription.
 
-    parameters:
-        subscription: Pointer to the subscription.
+    Parameters:
+        subscription: pointer to a valid subscription object.
 
-    pre-condition:
-        subscription must be initialized and not NULL.
+    Pre-conditions:
+        subscription must not be NULL.
 
-    post-condition:
-        No modification to the subscription.
+    Post-conditions:
+        None.
 
-    return:
-        datetime_ptr: A pointer to the start date.
+    Returns:
+        datetime_ptr: pointer to the start date.
 */
 datetime_ptr get_subscription_start_date(subscription_ptr subscription);
 
 /*
-    Function that retrieves the end date of the subscription.
+    Retrieves the end date of the subscription.
 
-    parameters:
-        subscription: Pointer to the subscription.
+    Parameters:
+        subscription: pointer to a valid subscription object.
 
-    pre-condition:
-        subscription must be initialized and not NULL.
+    Pre-conditions:
+        subscription must not be NULL.
 
-    post-condition:
-        No modification to the subscription.
+    Post-conditions:
+        None.
 
-    return:
-        datetime_ptr: A pointer to the end date.
+    Returns:
+        datetime_ptr: pointer to the end date.
 */
 datetime_ptr get_subscription_end_date(subscription_ptr subscription);
 
+/*
+    Sets a new start date for the subscription.
+
+    Parameters:
+        subscription: pointer to a valid subscription object.
+        start_date: pointer to a valid datetime object.
+
+    Pre-conditions:
+        Both pointers must not be NULL.
+
+    Post-conditions:
+        The subscription's start date is updated.
+*/
 void set_subscription_start_date(subscription_ptr subscription, datetime_ptr start_date);
 
+/*
+    Sets a new end date for the subscription.
+
+    Parameters:
+        subscription: pointer to a valid subscription object.
+        end_date: pointer to a valid datetime object.
+
+    Pre-conditions:
+        Both pointers must not be NULL.
+
+    Post-conditions:
+        The subscription's end date is updated.
+*/
 void set_subscription_end_date(subscription_ptr subscription, datetime_ptr end_date);
 
+/*
+    Renews a subscription by setting both start and end dates.
+
+    Parameters:
+        subscription: pointer to a valid subscription object.
+        start_date: pointer to the new start date.
+        end_date: pointer to the new end date.
+
+    Pre-conditions:
+        All pointers must not be NULL.
+
+    Post-conditions:
+        Both start and end dates are updated in the subscription.
+*/
 void set_subscription_renew(subscription_ptr subscription, datetime_ptr start_date, datetime_ptr end_date);
 
 /*
-    Function that prints the subscription's information.
+    Prints the subscription's start and end dates.
 
-    parameters:
-        subscription: Pointer to the subscription to print.
+    Parameters:
+        subscription: pointer to a valid subscription object.
 
-    pre-condition:
-        subscription must be initialized and not NULL.
+    Pre-conditions:
+        subscription must not be NULL.
 
-    post-condition:
-        No modification to the subscription.
-
-    return:
-        Nothing.
+    Post-conditions:
+        Information is printed to stdout.
 */
 void print_subscription(subscription_ptr subscription);
 
 /*
-    Function that deletes a subscription and frees its memory.
+    Deletes a subscription and frees its memory (including datetime fields).
 
-    parameters:
-        subscription: Pointer to the subscription to delete.
+    Parameters:
+        subscription: pointer to the subscription to delete.
 
-    pre-condition:
-        subscription must be initialized and not NULL.
+    Pre-conditions:
+        subscription must not be NULL.
 
-    post-condition:
-        The subscription and its associated resources are freed from memory.
-
-    return:
-        Nothing.
+    Post-conditions:
+        The subscription and its datetime fields are deallocated.
 */
 void delete_subscription(subscription_ptr subscription);
 

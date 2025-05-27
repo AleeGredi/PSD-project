@@ -54,9 +54,9 @@ user_ptr create_user(
         None.
 
     Returns:
-        const char*: pointer to the CF string.
+        char*: pointer to the CF string.
 */
-const char* get_user_CF(user_ptr user);
+char* get_user_CF(user_ptr user);
 
 /*
     Returns the user's first name.
@@ -71,9 +71,9 @@ const char* get_user_CF(user_ptr user);
         None.
 
     Returns:
-        const char*: pointer to the first name string.
+        char*: pointer to the first name string.
 */
-const char* get_user_first_name(user_ptr user);
+char* get_user_first_name(user_ptr user);
 
 /*
     Returns the user's last name.
@@ -88,9 +88,9 @@ const char* get_user_first_name(user_ptr user);
         None.
 
     Returns:
-        const char*: pointer to the last name string.
+        char*: pointer to the last name string.
 */
-const char* get_user_last_name(user_ptr user);
+char* get_user_last_name(user_ptr user);
 
 /*
     Returns the user's username.
@@ -105,9 +105,9 @@ const char* get_user_last_name(user_ptr user);
         None.
 
     Returns:
-        const char*: pointer to the username string.
+        char*: pointer to the username string.
 */
-const char* get_user_username(user_ptr user);
+char* get_user_username(user_ptr user);
 
 /*
     Returns the user's password.
@@ -122,9 +122,9 @@ const char* get_user_username(user_ptr user);
         None.
 
     Returns:
-        const char*: pointer to the password string.
+        char*: pointer to the password string.
 */
-const char* get_user_password(user_ptr user);
+char* get_user_password(user_ptr user);
 
 /*
     Returns the user's subscription.
@@ -157,6 +157,19 @@ subscription_ptr get_user_subscription(user_ptr user);
 */
 datetime_ptr get_user_last_report_date(user_ptr user);
 
+/*
+    Sets the user's last report date.
+
+    Parameters:
+        user: pointer to the user object.
+        last_report: pointer to the new datetime.
+
+    Pre-conditions:
+        Both user and last_report must not be NULL.
+
+    Post-conditions:
+        The previous datetime is freed and replaced by the new one.
+*/
 void set_user_last_report_date(user_ptr user, datetime_ptr last_report);
 
 /*
@@ -169,10 +182,7 @@ void set_user_last_report_date(user_ptr user, datetime_ptr last_report);
         user must not be NULL.
 
     Post-conditions:
-        None.
-
-    Returns:
-        None.
+        User information is printed to stdout.
 */
 void print_user(user_ptr user);
 
@@ -187,9 +197,6 @@ void print_user(user_ptr user);
 
     Post-conditions:
         All allocated memory for the user and its fields is released.
-
-    Returns:
-        None.
 */
 void delete_user(user_ptr user);
 

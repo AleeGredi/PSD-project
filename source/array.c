@@ -12,8 +12,7 @@ struct array {
 
 /*
     Allocates memory for a new array structure and initializes its fields.
-    The `elements` buffer is not allocated here — it is assumed to be
-    handled separately if needed.
+    The elements buffer is also allocated to hold pointers up to the given size.
 
     parameters:
         size: the intended capacity of the array (uint16_t).
@@ -42,8 +41,7 @@ array_ptr array_create(uint16_t size) {
 
 /*
     Adds a new element to the array by inserting its pointer at the next
-    available position (last_element + 1). It then increments
-    last_element.
+    available position (last_element). It then increments last_element.
 
     parameters:
         array:   pointer to the array (must be valid)
@@ -55,15 +53,13 @@ array_ptr array_create(uint16_t size) {
         array->last_element < array->size
 
     post-condition:
-        - `elements[old last_element] == element`
-        - `last_element` is incremented by 1
+        - elements[old last_element] == element
+        - last_element is incremented by 1
 
     return:
         None; exits the program if capacity would be exceeded.
-
 */
 void array_add(array_ptr array, void* element){
-    // data is inserted in order
     if (array->last_element > array->size) {
         perror("Array size surpassed");
         exit(1);
@@ -72,56 +68,76 @@ void array_add(array_ptr array, void* element){
     array->last_element++;
 }
 
+/*
+    Returns the total capacity (size) of the array.
+
+    parameters:
+        array: pointer to the array (must be valid)
+
+    pre-condition:
+        array must be valid
+
+    post-condition:
+        No changes to the array
+
+    return:
+        The capacity of the array
+*/
 uint16_t get_size(array_ptr array){
     return array->size;
 }
 
+/*
+    Retrieves a pointer to the element at the specified index.
+
+    parameters:
+        array: pointer to the array (must be valid)
+        index: zero-based index to retrieve from
+
+    pre-condition:
+        array must be valid
+        index < array->size
+
+    post-condition:
+        No changes to the array
+
+    return:
+        Pointer to the element at the given index, or NULL if out of bounds
+*/
 void** get_at(array_ptr array, uint16_t index) {
     if (index >= array->size) return NULL;
     return &array->elements[index];
 }
 
+/*
+    Replaces the element at the specified index with a new element.
+
+    parameters:
+        array:   pointer to the array (must be valid)
+        index:   zero-based index to replace
+        element: new element to set at the given index
+
+    pre-condition:
+        array must be valid
+        index < array->size
+
+    post-condition:
+        The element at the specified index is replaced
+
+    return:
+        None
+*/
 void set_at(array_ptr array, uint16_t index, void* element) {
     if (index >= array->size) return;
     array->elements[index] = element;
 }
-
-
-/*
-    Performs a linear search through the element array, comparing each
-    element’s ID with the target course_id using get_course_id().
-
-    parameters:
-        array: pointer to the initialized array of courses to search.
-        course_id: the element ID to find (uint16_t).
-
-    pre-condition:
-        array must be non-NULL and properly initialized.
-        array->elements must contain valid course_ptr entries.
-
-    post-condition:
-        The array remains unchanged.
-
-    return:
-        The zero-based index of the element if a match is found;
-        otherwise, returns -1.
-
-int search_course(array_ptr array, uint16_t course_id) {
-    for(int i = 0; i < array->size; i++) {
-        if (get_course_id(array->elements) == course_id) {
-            return i;
-        }
-    }
-    return -1;
-}
-*/
 
 /*
     Iterates over the array and calls a user-provided print function on each element.
 
     parameters:
         array:          pointer to the array (must be valid)
-        file:           file in which output the print function
+        file:           file in which to output the print function
         print_function: function to print one element (must be valid)
 
     pre-condition:
@@ -134,7 +150,7 @@ int search_course(array_ptr array, uint16_t course_id) {
         the array remains unchanged.
 
     return:
-        None.
+        None
 */
 void array_print(array_ptr array,  FILE* file, void (*print_function)(FILE* file, void* element)) {
     CHECK_NULL(array);
@@ -144,6 +160,24 @@ void array_print(array_ptr array,  FILE* file, void (*print_function)(FILE* file
     }
 }
 
+/*
+    Frees memory for all elements in the array using a provided delete_function,
+    then frees the array structure itself.
+
+    parameters:
+        array:           pointer to the array (must be valid)
+        delete_function: function to deallocate each element (may be NULL)
+
+    pre-condition:
+        array must be valid
+
+    post-condition:
+        All element memory is deallocated if delete_function is provided,
+        then the array and its internal storage are freed
+
+    return:
+        None
+*/
 void array_delete(array_ptr array, void (*delete_function)(void* element)) {
     if (!delete_function) {
         free(array->elements);

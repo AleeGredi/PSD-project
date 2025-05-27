@@ -17,28 +17,26 @@ struct user {
     datetime_ptr last_report_date;
 };
 
-
 /*
-    Allocates and initializes a new user object by allocating its strings
-    and setting its fields.
+    Allocates and initializes a new user object with deep-copied strings.
 
     Parameters:
-        id: unique user identifier.
         CF: user's codice fiscale (null-terminated string).
-        first_name: user's first name (null-terminated string).
-        last_name: user's last name (null-terminated string).
-        username: user's login username (null-terminated string).
-        password: user's login password (null-terminated string).
-        subscription: pointer to a valid subscription object.
+        first_name: user's first name.
+        last_name: user's last name.
+        username: user's login username.
+        password: user's login password.
+        subscription: pointer to an existing subscription object.
+        last_report_date: pointer to a datetime object.
 
     Pre-conditions:
-        All string parameters and subscription must not be NULL.
+        All string parameters and pointers must not be NULL.
 
     Post-conditions:
-        Returns a pointer to a newly allocated user object with deep copies of the strings.
+        A new user is returned with duplicated strings; subscription and last_report_date are referenced.
 
     Returns:
-        user_ptr: pointer to the initialized user object.
+        Pointer to the newly created user object.
 */
 user_ptr create_user(
     char* CF,
@@ -49,28 +47,31 @@ user_ptr create_user(
     subscription_ptr subscription,
     datetime_ptr last_report_date
 ){
-    struct user* new_user = malloc(sizeof(struct user));
+    CHECK_NULL(CF);
+    CHECK_NULL(first_name);
+    CHECK_NULL(last_name);
+    CHECK_NULL(username);
+    CHECK_NULL(password);
+    CHECK_NULL(subscription);
+    CHECK_NULL(last_report_date);
+
+    user_ptr new_user = malloc(sizeof(struct user));
     CHECK_NULL(new_user);
 
-    new_user->CF = malloc(strlen(CF) + 1);
+    new_user->CF = strdup(CF);
     CHECK_NULL(new_user->CF);
-    strcpy(new_user->CF, CF);
 
-    new_user->first_name = malloc(strlen(first_name) + 1);
+    new_user->first_name = strdup(first_name);
     CHECK_NULL(new_user->first_name);
-    strcpy(new_user->first_name, first_name);
 
-    new_user->last_name = malloc(strlen(last_name) + 1);
+    new_user->last_name = strdup(last_name);
     CHECK_NULL(new_user->last_name);
-    strcpy(new_user->last_name, last_name);
 
-    new_user->username = malloc(strlen(username) + 1);
+    new_user->username = strdup(username);
     CHECK_NULL(new_user->username);
-    strcpy(new_user->username, username);
 
-    new_user->password = malloc(strlen(password) + 1);
+    new_user->password = strdup(password);
     CHECK_NULL(new_user->password);
-    strcpy(new_user->password, password);
 
     new_user->subscription = subscription;
     new_user->last_report_date = last_report_date;
@@ -78,126 +79,68 @@ user_ptr create_user(
     return new_user;
 }
 
-/*
-    Returns the codice fiscale of the user.
+/* Getter Functions */
 
-    Parameters:
-        user: pointer to a valid user object.
-
-    Pre-conditions:
-        user must not be NULL.
-
-    Returns:
-        const char*: pointer to the user's CF string.
-*/
-const char* get_user_CF(user_ptr user) {
+char* get_user_CF(user_ptr user) {
+    CHECK_NULL(user);
     return user->CF;
 }
 
-/*
-    Returns the first name of the user.
-
-    Parameters:
-        user: pointer to a valid user object.
-
-    Pre-conditions:
-        user must not be NULL.
-
-    Returns:
-        const char*: pointer to the user's first name.
-*/
-const char* get_user_first_name(user_ptr user) {
+char* get_user_first_name(user_ptr user) {
+    CHECK_NULL(user);
     return user->first_name;
 }
 
-/*
-    Returns the last name of the user.
-
-    Parameters:
-        user: pointer to a valid user object.
-
-    Pre-conditions:
-        user must not be NULL.
-
-    Returns:
-        const char*: pointer to the user's last name.
-*/
-const char* get_user_last_name(user_ptr user) {
+char* get_user_last_name(user_ptr user) {
+    CHECK_NULL(user);
     return user->last_name;
 }
 
-/*
-    Returns the username of the user.
-
-    Parameters:
-        user: pointer to a valid user object.
-
-    Pre-conditions:
-        user must not be NULL.
-
-    Returns:
-        const char*: pointer to the user's username.
-*/
-const char* get_user_username(user_ptr user) {
+char* get_user_username(user_ptr user) {
+    CHECK_NULL(user);
     return user->username;
 }
 
-/*
-    Returns the password of the user.
-
-    Parameters:
-        user: pointer to a valid user object.
-
-    Pre-conditions:
-        user must not be NULL.
-
-    Returns:
-        const char*: pointer to the user's password.
-*/
-const char* get_user_password(user_ptr user) {
+char* get_user_password(user_ptr user) {
+    CHECK_NULL(user);
     return user->password;
 }
 
-/*
-    Returns the subscription associated with the user.
-
-    Parameters:
-        user: pointer to a valid user object.
-
-    Pre-conditions:
-        user must not be NULL.
-
-    Returns:
-        subscription_ptr: pointer to the user's subscription.
-*/
 subscription_ptr get_user_subscription(user_ptr user) {
+    CHECK_NULL(user);
     return user->subscription;
 }
 
-/*
-    Returns the last_report_date associated with the user.
-
-    Parameters:
-        user: pointer to a valid user object.
-
-    Pre-conditions:
-        user must not be NULL.
-
-    Returns:
-        datetime_ptr: pointer to the user's last_report_date.
-*/
 datetime_ptr get_user_last_report_date(user_ptr user) {
+    CHECK_NULL(user);
     return user->last_report_date;
 }
 
+/*
+    Updates the user's last report date, replacing the previous datetime.
+
+    Parameters:
+        user: pointer to a valid user object.
+        last_report: new datetime to assign.
+
+    Pre-conditions:
+        user and last_report must not be NULL.
+
+    Post-conditions:
+        Replaces the old datetime (freed) with the new one.
+*/
 void set_user_last_report_date(user_ptr user, datetime_ptr last_report) {
-    datetime_ptr to_delete = user->last_report_date;
-    free(to_delete);
+    CHECK_NULL(user);
+    CHECK_NULL(last_report);
+
+    if (user->last_report_date != last_report) {
+        free(user->last_report_date);
+    }
     user->last_report_date = last_report;
 }
 
 /*
-    Prints detailed user information to standard output.
+    Prints all user information.
 
     Parameters:
         user: pointer to a valid user object.
@@ -205,10 +148,11 @@ void set_user_last_report_date(user_ptr user, datetime_ptr last_report) {
     Pre-conditions:
         user must not be NULL.
 
-    Returns:
-        None.
+    Post-conditions:
+        Outputs user data to stdout.
 */
 void print_user(user_ptr user) {
+    CHECK_NULL(user);
     printf("CF          : %s\n", user->CF);
     printf("First Name  : %s\n", user->first_name);
     printf("Last Name   : %s\n", user->last_name);
@@ -216,24 +160,26 @@ void print_user(user_ptr user) {
     printf("Password    : %s\n", user->password);
     printf("Subscription:\n");
     print_subscription(user->subscription);
+    printf("Last Report : ");
+    print_datetime(stdout, user->last_report_date);
+    printf("\n");
 }
 
 /*
-    Frees all memory associated with a user object.
+    Frees all memory associated with the user.
 
     Parameters:
-        user: pointer to the user object to delete.
+        user: pointer to the user to delete.
 
     Pre-conditions:
         user must not be NULL.
 
     Post-conditions:
-        All memory allocated for the user and its fields is released.
-
-    Returns:
-        None.
+        All associated memory is freed.
 */
 void delete_user(user_ptr user) {
+    CHECK_NULL(user);
+
     free(user->CF);
     free(user->first_name);
     free(user->last_name);
@@ -241,5 +187,6 @@ void delete_user(user_ptr user) {
     free(user->password);
 
     delete_subscription(user->subscription);
+    free(user->last_report_date);
     free(user);
 }

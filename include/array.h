@@ -9,6 +9,7 @@ typedef struct array *array_ptr;
 
 /*
     Function that creates a new array capable of holding up to `size` elements.
+    It allocates internal storage and initializes control fields.
 
     parameters:
         size: the intended capacity of the array (uint16_t).
@@ -37,24 +38,75 @@ array_ptr array_create(uint16_t size);
     pre-condition:
         array must be valid
         element must be valid
+        array->last_element < array->size
 
     post-condition:
-        - element iserted at the last available position
+        - element inserted at the last available position
+        - last_element is incremented by 1
 
     return:
         None; exits the program if capacity would be exceeded.
-
 */
 void array_add(array_ptr array, void* element);
 
+/*
+    Returns the total capacity (size) of the array.
+
+    parameters:
+        array: pointer to the array (must be valid)
+
+    pre-condition:
+        array must be valid
+
+    post-condition:
+        No changes to the array
+
+    return:
+        The capacity of the array
+*/
 uint16_t get_size(array_ptr array);
 
+/*
+    Retrieves a pointer to the element at the specified index.
+
+    parameters:
+        array: pointer to the array (must be valid)
+        index: zero-based index to retrieve from
+
+    pre-condition:
+        array must be valid
+        index < array->size
+
+    post-condition:
+        No changes to the array
+
+    return:
+        Pointer to the element at the given index, or NULL if out of bounds
+*/
 void** get_at(array_ptr array, uint16_t index);
 
+/*
+    Replaces the element at the specified index with a new element.
+
+    parameters:
+        array:   pointer to the array (must be valid)
+        index:   zero-based index to replace
+        element: new element to set at the given index
+
+    pre-condition:
+        array must be valid
+        index < array->size
+
+    post-condition:
+        The element at the specified index is replaced
+
+    return:
+        None
+*/
 void set_at(array_ptr array, uint16_t index, void* element);
 
 /*
-    Function that searches for a element by its ID within the array.
+    Function that searches for an element by its ID within the array.
 
     parameters:
         array: pointer to the initialized array of courses to search.
@@ -75,7 +127,7 @@ int search_course(array_ptr array, uint16_t course_id);
 */
 
 /*
-    Iterates over the array and print them.
+    Iterates over the array and prints each element using a user-provided function.
 
     parameters:
         array:          pointer to the array (must be valid)
@@ -96,7 +148,24 @@ int search_course(array_ptr array, uint16_t course_id);
 */
 void array_print(array_ptr array,  FILE* file, void (*print_function)(FILE* file, void* element));
 
+/*
+    Frees memory for all elements in the array using a provided delete_function,
+    then frees the array structure itself.
 
+    parameters:
+        array:           pointer to the array (must be valid)
+        delete_function: function to deallocate each element (may be NULL)
+
+    pre-condition:
+        array must be valid
+
+    post-condition:
+        All element memory is deallocated if delete_function is provided,
+        then the array and its internal storage are freed
+
+    return:
+        None
+*/
 void array_delete(array_ptr array, void (*delete_function)(void* element));
 
-#endif 
+#endif
