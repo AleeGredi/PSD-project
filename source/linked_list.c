@@ -15,7 +15,16 @@ struct linked_list {
 };
 
 /*
-    Allocates and initializes a new linked list with no nodes.
+    Allocates and initializes memory for a new linked list struct with head set to NULL and element count zero.
+
+    parameters:
+        none
+
+    pre-condition:
+        none
+
+    post-condition:
+        A new, empty linked list is created in memory.
 
     return:
         linked_list_ptr: pointer to the newly created list.
@@ -31,7 +40,7 @@ linked_list_ptr ll_create() {
 }
 
 /*
-    Appends a new node with the specified element to the end of the list.
+    Creates a new node, traverses to the end of the list, and appends the node there.
 
     parameters:
         linked_list: valid (non-NULL) pointer to the list.
@@ -45,7 +54,7 @@ linked_list_ptr ll_create() {
         element_count is incremented.
 
     return:
-        Nothing.
+        None
 */
 void ll_add(linked_list_ptr linked_list, void* element) {
     struct node* new_booking = malloc(sizeof(struct node));
@@ -67,8 +76,7 @@ void ll_add(linked_list_ptr linked_list, void* element) {
 }
 
 /*
-    Searches for a node whose element matches the target using the
-    provided compare_function.
+    Iterates over the list, comparing each element using compare_function until a match is found.
 
     parameters:
         linked_list: valid (non-NULL) pointer to the list.
@@ -82,7 +90,7 @@ void ll_add(linked_list_ptr linked_list, void* element) {
         No changes to the list.
 
     return:
-        Index (starting from 0) of the first matching node, or -1 if not found.
+        int: Index (starting from 0) of the first matching node, or -1 if not found.
 */
 int ll_search(linked_list_ptr linked_list, void* element, int (*compare_function)(void* element1, void* element2)) {
     int index = 0;
@@ -99,8 +107,24 @@ int ll_search(linked_list_ptr linked_list, void* element, int (*compare_function
     return -1;
 }
 
+/*
+    Traverses the list up to the given index and returns a pointer to the element.
+
+    parameters:
+        linked_list: valid (non-NULL) pointer to the list.
+        index: index of the element to retrieve.
+
+    pre-condition:
+        linked_list must be valid and index must be within bounds of the list.
+
+    post-condition:
+        The list remains unmodified.
+
+    return:
+        void**: pointer to the element at the specified index, or NULL if index is out of bounds.
+*/
 void** ll_get_at(linked_list_ptr linked_list, uint16_t index){
-    if(index > linked_list->element_count) return NULL;
+    if(index >= linked_list->element_count) return NULL;
     
     struct node* current = linked_list->head;
     uint16_t i = 0;
@@ -111,10 +135,41 @@ void** ll_get_at(linked_list_ptr linked_list, uint16_t index){
     return &current->element;
 }
 
+/*
+    Returns the current count of elements stored in the list.
+
+    parameters:
+        linked_list: valid (non-NULL) pointer to the list.
+
+    pre-condition:
+        linked_list must be valid and non-NULL.
+
+    post-condition:
+        The list remains unmodified.
+
+    return:
+        uint16_t: number of elements in the list.
+*/
 uint16_t ll_get_element_count(linked_list_ptr linked_list) {
     return linked_list->element_count;
 }
 
+/*
+    Iterates through the list and adds each element to the provided array using array_add.
+
+    parameters:
+        linked_list: valid (non-NULL) pointer to the list.
+        array: valid (non-NULL) pointer to the array where elements will be copied.
+
+    pre-condition:
+        Both parameters must be valid and non-NULL. Array must be appropriately sized.
+
+    post-condition:
+        The array contains a copy of all elements from the list.
+
+    return:
+        None
+*/
 void ll_copy_list_to_array(linked_list_ptr linked_list, array_ptr array) {
     struct node* current = linked_list->head;
     while(current) {
@@ -123,6 +178,23 @@ void ll_copy_list_to_array(linked_list_ptr linked_list, array_ptr array) {
     }
 }
 
+/*
+    Traverses the list to the given index, unlinks the node, calls delete_function, and frees it.
+
+    parameters:
+        linked_list: valid (non-NULL) pointer to the list.
+        index: index of the node to delete.
+        delete_function: valid function pointer to deallocate the element in the node.
+
+    pre-condition:
+        All parameters must be valid and index must be within bounds.
+
+    post-condition:
+        The node at the specified index is removed and its memory is released.
+
+    return:
+        None
+*/
 void ll_delete_at(linked_list_ptr linked_list,
     uint16_t index,
     void (*delete_function)(void* element)) {
@@ -138,7 +210,6 @@ void ll_delete_at(linked_list_ptr linked_list,
         to_delete = current;
         linked_list->head = current->next;
     } else {
-        // Traverse to node just before the one to delete
         for (uint16_t i = 0; i < index - 1; i++) {
             current = current->next;
         }
@@ -146,7 +217,6 @@ void ll_delete_at(linked_list_ptr linked_list,
         current->next = to_delete->next;
     }
 
-    // Free element and node
     if (delete_function) {
         delete_function(to_delete->element);
     }
@@ -155,8 +225,7 @@ void ll_delete_at(linked_list_ptr linked_list,
 }
 
 /*
-    Removes the first node that matches the given element using
-    compare_function and frees its memory using delete_function.
+    Traverses the list to find the first match using compare_function, removes the node, and frees its memory.
 
     parameters:
         linked_list: valid (non-NULL) pointer to the list.
@@ -172,7 +241,7 @@ void ll_delete_at(linked_list_ptr linked_list,
         element_count is decremented if deletion occurs.
 
     return:
-        Nothing.
+        None
 */
 void ll_delete_element(linked_list_ptr linked_list, 
     void* element, 
@@ -203,7 +272,7 @@ void ll_delete_element(linked_list_ptr linked_list,
 }
 
 /*
-    Frees all nodes and their elements from memory using delete_function.
+    Iterates through the list, freeing each node's element using delete_function and then the node itself.
 
     parameters:
         linked_list: valid (non-NULL) pointer to the list.
@@ -217,7 +286,7 @@ void ll_delete_element(linked_list_ptr linked_list,
         The list itself is also deallocated.
 
     return:
-        Nothing.
+        None
 */
 void ll_delete_list(linked_list_ptr linked_list, void (*delete_function)(void* element)) {
     if (!delete_function) {
@@ -238,21 +307,21 @@ void ll_delete_list(linked_list_ptr linked_list, void (*delete_function)(void* e
 }
 
 /*
-    Iterates through the list and prints each element using the provided function.
+    Walks through each node in the list and uses the provided print function to display the element.
 
     parameters:
         linked_list: valid (non-NULL) pointer to the list.
-        file: file in which output the print function
+        file: file in which output the print function.
         print_function: valid function pointer to print a node's element.
 
     pre-condition:
         All parameters must be valid and non-NULL.
 
     post-condition:
-        The list is unchanged; output is printed to stdout.
+        The list is unchanged; output is printed to the specified file.
 
     return:
-        Nothing.
+        None
 */
 void ll_print(linked_list_ptr linked_list,  FILE* file, void (*print_function)(FILE* file, void* element)) {
     struct node* current = linked_list->head;

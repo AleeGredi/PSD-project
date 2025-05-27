@@ -267,71 +267,98 @@ int main(void){
     return 0;
 }
 
-char *login_user(){
-    char *username = NULL, *line = NULL;
-    size_t len = 0, line_len = 0;
+char *login_user(void) {
+    char input_buf[256];
+    char *username = NULL;
     char password[MAX_INPUT_USER];
     char stored_password[MAX_INPUT_USER];
+    char filepath[512];
+    FILE *file;
+    char linebuf[1024];
 
     printf("=== User Login ===\n");
 
+    // Read username
     printf("Enter username: ");
-    if (getline(&username, &len, stdin) == -1){
+    if (fgets(input_buf, sizeof(input_buf), stdin) == NULL) {
         fprintf(stderr, "Failed to read username.\n");
         return NULL;
     }
-    username[strcspn(username, "\n")] = '\0';
+    // Strip newline
+    input_buf[strcspn(input_buf, "\n")] = '\0';
 
+    // Allocate and copy username
+    username = malloc(strlen(input_buf) + 1);
+    if (!username) {
+        perror("malloc");
+        return NULL;
+    }
+    strcpy(username, input_buf);
+
+    // Read password
     printf("Enter password: ");
-    if (!fgets(password, sizeof(password), stdin)){
+    if (fgets(password, sizeof(password), stdin) == NULL) {
         fprintf(stderr, "Failed to read password.\n");
         free(username);
         return NULL;
     }
     password[strcspn(password, "\n")] = '\0';
 
-    char filepath[192] = {0};
-    snprintf(filepath, sizeof(filepath), "assets/users/%s.txt", username);
+    // Build path to user file
+    snprintf(filepath, sizeof(filepath),
+             "assets/users/%s.txt", username);
 
-    FILE *file = fopen(filepath, "r");
-    if (!file){
+    file = fopen(filepath, "r");
+    if (!file) {
         fprintf(stderr, "User '%s' not found.\n", username);
         free(username);
         return NULL;
     }
 
-    getline(&line, &line_len, file);
-    if (getline(&line, &line_len, file) == -1){
+    // Skip the first line (e.g. header)
+    if (fgets(linebuf, sizeof(linebuf), file) == NULL) {
         fprintf(stderr, "Error reading user file.\n");
         fclose(file);
         free(username);
-        free(line);
         return NULL;
     }
 
-    int field = 0;
-    char *token = strtok(line, ",");
-    while (token && field++ < 4)
-        token = strtok(NULL, ",");
-    if (!token){
-        fprintf(stderr, "Error in user file.\n");
+    // Read the second line, which contains the comma‐separated fields
+    if (fgets(linebuf, sizeof(linebuf), file) == NULL) {
+        fprintf(stderr, "Error reading user file.\n");
         fclose(file);
         free(username);
-        free(line);
         return NULL;
     }
-    strncpy(stored_password, token, MAX_INPUT_USER - 1);
-    stored_password[strcspn(stored_password, "\n")] = '\0';
-
     fclose(file);
-    free(line);
 
-    if (strcmp(password, stored_password) != 0){
+    // Extract the 5th field (index 4) as the stored password
+    {
+        int field = 0;
+        char *token = strtok(linebuf, ",");
+        while (token && field < 4) {
+            token = strtok(NULL, ",");
+            field++;
+        }
+        if (!token) {
+            fprintf(stderr, "Malformed user file.\n");
+            free(username);
+            return NULL;
+        }
+        // Copy and strip newline
+        strncpy(stored_password, token, MAX_INPUT_USER - 1);
+        stored_password[MAX_INPUT_USER - 1] = '\0';
+        stored_password[strcspn(stored_password, "\n")] = '\0';
+    }
+
+    // Verify password
+    if (strcmp(password, stored_password) != 0) {
         fprintf(stderr, "Incorrect password.\n");
         free(username);
         return NULL;
     }
 
+    // Success!
     return username;
 }
 

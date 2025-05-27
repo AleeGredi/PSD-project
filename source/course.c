@@ -46,14 +46,11 @@ course_ptr create_course(
 
     new_course->id = id;
 
-    // Copy course name
     new_course->name = malloc(strlen(name) + 1);
     CHECK_NULL(new_course->name);
     strcpy(new_course->name, name);
 
-    // Store reference to provided datetime
     new_course->datetime = datetime;
-
     new_course->seats_total  = seats_total;
     new_course->seats_booked = seats_booked;
 
@@ -67,10 +64,7 @@ course_ptr create_course(
         course: a valid pointer to a course object.
 
     Pre-conditions:
-        course must not be NULL.
-
-    Post-conditions:
-        None.
+        course must be initialized and not NULL.
 
     Returns:
         The course ID.
@@ -79,13 +73,23 @@ uint16_t get_course_id(course_ptr course) {
     return course->id;
 }
 
+/*
+    Compares two course pointers by ID for equality.
+
+    Parameters:
+        a: void pointer to the first course.
+        b: void pointer to the second course.
+
+    Pre-conditions:
+        Both a and b must be valid pointers to course objects.
+
+    Returns:
+        1 if both courses have the same ID, 0 otherwise.
+*/
 int compare_course_id(void* a, void* b) {
     course_ptr course_a = (course_ptr)a;
     course_ptr course_b = (course_ptr)b;
-    if (get_course_id(course_a) == get_course_id(course_b)){
-        return 1;
-    }    
-    return 0;
+    return get_course_id(course_a) == get_course_id(course_b);
 }
 
 /*
@@ -95,10 +99,7 @@ int compare_course_id(void* a, void* b) {
         course: a valid pointer to a course object.
 
     Pre-conditions:
-        course must not be NULL.
-
-    Post-conditions:
-        None.
+        course must be initialized and not NULL.
 
     Returns:
         Pointer to the null-terminated name string.
@@ -114,10 +115,7 @@ char* get_course_name(course_ptr course) {
         course: a valid pointer to a course object.
 
     Pre-conditions:
-        course must not be NULL.
-
-    Post-conditions:
-        None.
+        course must be initialized and not NULL.
 
     Returns:
         Pointer to the datetime object.
@@ -133,10 +131,7 @@ datetime_ptr get_course_datetime(course_ptr course) {
         course: a valid pointer to a course object.
 
     Pre-conditions:
-        course must not be NULL.
-
-    Post-conditions:
-        None.
+        course must be initialized and not NULL.
 
     Returns:
         Total seats.
@@ -152,10 +147,7 @@ uint16_t get_course_seats_total(course_ptr course) {
         course: a valid pointer to a course object.
 
     Pre-conditions:
-        course must not be NULL.
-
-    Post-conditions:
-        None.
+        course must be initialized and not NULL.
 
     Returns:
         Booked seats.
@@ -164,27 +156,53 @@ uint16_t get_course_seats_booked(course_ptr course) {
     return course->seats_booked;
 }
 
+/*
+    Updates the number of seats booked for a course.
+
+    Parameters:
+        course: pointer to a course object.
+        value:  new number of booked seats.
+
+    Pre-conditions:
+        course must be initialized and not NULL.
+
+    Post-conditions:
+        course->seats_booked is updated to the new value.
+
+    Returns:
+        None.
+*/
 void set_course_seats_booked(course_ptr course, int value) {
     course->seats_booked = value;
 }
 
+/*
+    Callback function to print only the course ID to a file.
+
+    Parameters:
+        file: output file pointer.
+        element: void pointer to a course.
+
+    Pre-conditions:
+        file must be a valid FILE pointer.
+        element must be a valid pointer to a course object.
+
+    Returns:
+        None.
+*/
 void save_booking_callback(FILE *file, void *element){
     course_ptr course = (course_ptr)element;
     fprintf(file, "%d,", get_course_id(course));
 }
 
 /*
-    Prints detailed information about the course, including:
-    ID, name, datetime (using print_datetime), seat counts (total and booked)
+    Prints detailed information about the course.
 
     Parameters:
         course: a valid pointer to a course object.
 
     Pre-conditions:
-        course must not be NULL.
-
-    Post-conditions:
-        None.
+        course must be initialized and not NULL.
 
     Returns:
         None.
@@ -200,31 +218,59 @@ void print_course(course_ptr course) {
            course->seats_booked);
 }
 
+/*
+    Callback to print course details to stdout.
+
+    Parameters:
+        file: ignored (stdout used instead).
+        element: void pointer to a course.
+
+    Pre-conditions:
+        element must be a valid pointer to a course object.
+
+    Returns:
+        None.
+*/
 void print_course_callback(FILE *file, void *element){
+    (void)file; // Explicitly ignore unused parameter
     course_ptr course = (course_ptr)element;
     print_course(course);
 }
 
+/*
+    Callback to print course data to a file in CSV format.
+
+    Parameters:
+        file: output file pointer.
+        element: void pointer to a course.
+
+    Pre-conditions:
+        file must be a valid FILE pointer.
+        element must be a valid pointer to a course object.
+
+    Returns:
+        None.
+*/
 void print_course_file_callback(FILE *file, void *element){
     course_ptr course = (course_ptr)element;
     fprintf(file, "%u,%s,", get_course_id(course), get_course_name(course));
     print_datetime(file, get_course_datetime(course));
-    fprintf(file, ",%u,%u,",get_course_seats_total(course), get_course_seats_booked(course));
+    fprintf(file, ",%u,%u,", get_course_seats_total(course), get_course_seats_booked(course));
     fprintf(file, "\n");
 }
 
 /*
-    Frees all memory (name, datetime object and the course struct itself)
-    associated with the course:
+    Frees all memory associated with the course:
+    name, datetime object, and the course struct itself.
 
     Parameters:
         course: a pointer to the course to delete.
 
     Pre-conditions:
-        course must not be NULL.
+        course must be initialized and not NULL.
 
     Post-conditions:
-        All memory allocated for the course and its components is freed.
+        The course and all associated memory are freed.
 
     Returns:
         None.
