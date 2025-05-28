@@ -187,8 +187,8 @@ int main(void){
                         datetime_ptr end_renewal = create_datetime(
                             get_datetime_field(now, "minute"),
                             get_datetime_field(now, "hour"),
-                            30,
-                            get_datetime_field(now, "month"),
+                            1,
+                            (get_datetime_field(now, "month") + 1) % 12,
                             get_datetime_field(now, "year")
                         );
                         set_subscription_renew(get_user_subscription(user), start_renewal, end_renewal);
@@ -642,15 +642,15 @@ void registration_user() {
 
     // Prepare subscription dates
     datetime_ptr now = get_datetime();
-    datetime_ptr start = now;
-    // Set subscription end date to day 30 of current month
+    datetime_ptr start = get_datetime();
+    // Set subscription end date to day 1st of next month
         datetime_ptr end = create_datetime(
-        get_datetime_field(now, "minute"),
-        get_datetime_field(now, "hour"),
-        30,
-        get_datetime_field(now, "month"),
-        get_datetime_field(now, "year")
-    );
+            get_datetime_field(now, "minute"),
+            get_datetime_field(now, "hour"),
+            1,
+            (get_datetime_field(now, "month") + 1) % 12,
+            get_datetime_field(now, "year")
+        );
     subscription_ptr sub = create_subscription(start, end);
 
     // Create user struct
@@ -672,10 +672,12 @@ void registration_user() {
     save_user(booked_list, history_list, new_user);
 
     printf("Registration successful. User '%s' created.\n", username);
-
+    
     delete_user(new_user);
     ll_delete_list(booked_list, NULL);
     ll_delete_list(history_list, NULL);
+    
+    printf("Registration successful. User '%s' created.\n", username);
 }
 
 void report(user_ptr user, linked_list_ptr frequentation_linked_list) {

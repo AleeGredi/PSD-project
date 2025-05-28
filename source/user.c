@@ -58,19 +58,19 @@ user_ptr create_user(
     user_ptr new_user = malloc(sizeof(struct user));
     CHECK_NULL(new_user);
 
-    new_user->CF = strdup(CF);
+    new_user->CF = str_dup(CF);
     CHECK_NULL(new_user->CF);
 
-    new_user->first_name = strdup(first_name);
+    new_user->first_name = str_dup(first_name);
     CHECK_NULL(new_user->first_name);
 
-    new_user->last_name = strdup(last_name);
+    new_user->last_name = str_dup(last_name);
     CHECK_NULL(new_user->last_name);
 
-    new_user->username = strdup(username);
+    new_user->username = str_dup(username);
     CHECK_NULL(new_user->username);
 
-    new_user->password = strdup(password);
+    new_user->password = str_dup(password);
     CHECK_NULL(new_user->password);
 
     new_user->subscription = subscription;
@@ -79,38 +79,138 @@ user_ptr create_user(
     return new_user;
 }
 
-/* Getter Functions */
+/*
+    Returns the user's codice fiscale (CF).
 
+    Parameters:
+        user: pointer to the user object.
+
+    Pre-conditions:
+        user must not be NULL.
+
+    Post-conditions:
+        None.
+
+    Returns:
+        char*: pointer to the CF string.
+*/
 char* get_user_CF(user_ptr user) {
     CHECK_NULL(user);
     return user->CF;
 }
 
+/*
+    Returns the user's first name.
+
+    Parameters:
+        user: pointer to the user object.
+
+    Pre-conditions:
+        user must not be NULL.
+
+    Post-conditions:
+        None.
+
+    Returns:
+        char*: pointer to the first name string.
+*/
 char* get_user_first_name(user_ptr user) {
     CHECK_NULL(user);
     return user->first_name;
 }
 
+/*
+    Returns the user's last name.
+
+    Parameters:
+        user: pointer to the user object.
+
+    Pre-conditions:
+        user must not be NULL.
+
+    Post-conditions:
+        None.
+
+    Returns:
+        char*: pointer to the last name string.
+*/
 char* get_user_last_name(user_ptr user) {
     CHECK_NULL(user);
     return user->last_name;
 }
 
+/*
+    Returns the user's username.
+
+    Parameters:
+        user: pointer to the user object.
+
+    Pre-conditions:
+        user must not be NULL.
+
+    Post-conditions:
+        None.
+
+    Returns:
+        char*: pointer to the username string.
+*/
 char* get_user_username(user_ptr user) {
     CHECK_NULL(user);
     return user->username;
 }
 
+/*
+    Returns the user's password.
+
+    Parameters:
+        user: pointer to the user object.
+
+    Pre-conditions:
+        user must not be NULL.
+
+    Post-conditions:
+        None.
+
+    Returns:
+        char*: pointer to the password string.
+*/
 char* get_user_password(user_ptr user) {
     CHECK_NULL(user);
     return user->password;
 }
 
+/*
+    Returns the user's subscription.
+
+    Parameters:
+        user: pointer to the user object.
+
+    Pre-conditions:
+        user must not be NULL.
+
+    Post-conditions:
+        None.
+
+    Returns:
+        subscription_ptr: pointer to the user's subscription.
+*/
 subscription_ptr get_user_subscription(user_ptr user) {
     CHECK_NULL(user);
     return user->subscription;
 }
 
+/*
+    Returns the last_report_date associated with the user.
+
+    Parameters:
+        user: pointer to a valid user object.
+
+    Pre-conditions:
+        user must not be NULL.
+
+    Returns:
+        datetime_ptr: pointer to the user's last_report_date.
+*/
 datetime_ptr get_user_last_report_date(user_ptr user) {
     CHECK_NULL(user);
     return user->last_report_date;
@@ -187,6 +287,6 @@ void delete_user(user_ptr user) {
     free(user->password);
 
     delete_subscription(user->subscription);
-    free(user->last_report_date);
+    delete_datetime(user->last_report_date);
     free(user);
 }
