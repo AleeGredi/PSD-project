@@ -633,7 +633,7 @@ void report(char* filepath, user_ptr user, linked_list_ptr frequentation_linked_
         <
         get_datetime_field(current_datetime, "month");
     
-    if (!flag_year || !flag_month) exit(1);
+    if (!flag_year || !flag_month) return;
     
     // create flag
     FILE* file = fopen(filepath, "w");
@@ -643,8 +643,8 @@ void report(char* filepath, user_ptr user, linked_list_ptr frequentation_linked_
     array_ptr temp_array = array_create(array_size);
     ll_copy_list_to_array(frequentation_linked_list, temp_array);
     
+    // Bubble sort for the array made by the history list copy
     for (int i = 0; i < array_size - 1; i++) {
-        // After each full pass, the largest element among the first (n-i) is at position n-i-1
         for (int j = 0; j < array_size - i - 1; j++) {
             frequentation_ptr* element1 = (frequentation_ptr*)get_at(temp_array, j);
             frequentation_ptr* element2 = (frequentation_ptr*)get_at(temp_array, j + 1);
