@@ -6,7 +6,6 @@
 
 #define MAX_LINE_LEN 1024
 
-int go_to_line(FILE *f, int target_line);
 int compare_files(const char *path1, const char *path2);
 void booking_test(int test_case_type, int id);
 void subscription_test(int test_case_type, int id);
@@ -33,6 +32,12 @@ int main(int argc, char* argv[]) {
     }
     // printf("Test case type: %d\n", test_case_type);
     
+    char result_filepath[256];
+    sprintf(result_filepath, "test/%d/%d_test_result.txt", test_case_type, test_case_type);
+    FILE* result_file = fopen(result_filepath, "w");
+    CHECK_NULL(result_file);
+    fclose(result_file);
+
     // Then read all subsequent values as IDs
     while (fscanf(test_suite, "%d", &id) == 1) {
         printf("Test case ID: %d\n", id);
@@ -53,19 +58,6 @@ int main(int argc, char* argv[]) {
 
     fclose(test_suite);
     return 0;
-}
-
-int go_to_line(FILE *f, int target_line) {
-    if (fseek(f, 0, SEEK_SET) != 0)       // rewind to start
-        return -1;
-
-    int line = 1;
-    int ch;
-    while (line < target_line && (ch = fgetc(f)) != EOF) {
-        if (ch == '\n') 
-            line++;
-    }
-    return (line == target_line) ? 0 : -1;
 }
 
 int compare_files(const char *path1, const char *path2) {
@@ -142,11 +134,10 @@ void booking_test(int test_case_type, int id) {
     int user_test = !compare_files(user_output_filepath, user_oracle_filepath);
 
     char result_filepath[256];
-    sprintf(result_filepath, "test/%d/%d-%d_test_result.txt",test_case_type, test_case_type, id);
-    FILE* result_file = fopen(result_filepath, "w");
-    if (go_to_line(result_file, id) == 0) {
-        fprintf(result_file, "test:%d = %s", id, course_test && user_test ? "PASS" : "NOT PASS");
-    }
+    sprintf(result_filepath, "test/%d/%d_test_result.txt", test_case_type, test_case_type);
+    FILE* result_file = fopen(result_filepath, "a");
+    CHECK_NULL(result_file);
+    fprintf(result_file, "test:%d = %s\n", id, course_test && user_test ? "PASS" : "NOT PASS");
 
     fclose(result_file);
 }
@@ -184,12 +175,13 @@ void subscription_test(int test_case_type, int id) {
     int subscription_test = !compare_files(user_oracle_filepath, user_output_filepath);
 
     char result_filepath[256];
-    sprintf(result_filepath, "test/%d/%d-%d_test_result.txt", test_case_type, test_case_type, id);
-    FILE* result_file = fopen(result_filepath, "w");
-    if (result_file != NULL) {
-        fprintf(result_file, "test:%d = %s", id, subscription_test ? "PASS" : "NOT PASS");
-        fclose(result_file);
-    }
+    sprintf(result_filepath, "test/%d/%d_test_result.txt", test_case_type, test_case_type);
+    FILE* result_file = fopen(result_filepath, "a");
+    CHECK_NULL(result_file);
+    fprintf(result_file, "test:%d = %s\n", id, subscription_test ? "PASS" : "NOT PASS");
+    
+    fclose(result_file);
+    
 }
 
 void report_test(int test_case_type, int id) {
@@ -231,10 +223,10 @@ void report_test(int test_case_type, int id) {
     int user_test = !compare_files(user_oracle_filepath, user_output_filepath);
     
     char result_filepath[256];
-    sprintf(result_filepath, "test/%d/%d-%d_test_result.txt", test_case_type, test_case_type, id);
-    FILE* result_file = fopen(result_filepath, "w");
-    if (result_file != NULL) {
-        fprintf(result_file, "test:%d = %s", id, report_test && user_test ? "PASS" : "NOT PASS");
-        fclose(result_file);
-    }
+    sprintf(result_filepath, "test/%d/%d_test_result.txt", test_case_type, test_case_type);
+    FILE* result_file = fopen(result_filepath, "a");
+    CHECK_NULL(result_file);
+    fprintf(result_file, "test:%d = %s\n", id, report_test && user_test ? "PASS" : "NOT PASS");
+    fclose(result_file);
+    
 }

@@ -60,7 +60,7 @@ int main(void){
 
         switch (choice) {
         case 1: action_print_all_courses(array);       break;
-        case 2: action_show_booked_courses(booked_list);  break;
+        case 2: action_show_booked_courses(booked_list, user);  break;
         case 3: action_show_history(history_list);    break;
         case 4:
             uint16_t course_id;

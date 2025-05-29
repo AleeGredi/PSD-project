@@ -18,7 +18,7 @@
 #define REPORT_PATH "assets/report/"
 
 void action_print_all_courses(array_ptr array);
-void action_show_booked_courses(linked_list_ptr booked_list);
+void action_show_booked_courses(linked_list_ptr booked_list, user_ptr user);
 void action_show_history(linked_list_ptr history_list);
 void action_book_course(int course_id, linked_list_ptr booked_list, linked_list_ptr history_list, hash_map_ptr hash_map, user_ptr user);
 void action_cancel_course(linked_list_ptr booked_list, linked_list_ptr history_list);

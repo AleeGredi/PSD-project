@@ -7,7 +7,13 @@ void action_print_all_courses(array_ptr array) {
 }
 
 /* 2. Show my booked courses */
-void action_show_booked_courses(linked_list_ptr booked_list) {
+void action_show_booked_courses(linked_list_ptr booked_list, user_ptr user) {
+    if (compare_datetime(get_datetime(),
+        get_subscription_end_date(get_user_subscription(user))) == 1)
+    {
+        printf("Subscription has expired.\n");
+        return;
+    }
     printf("\n--- Booked Courses ---\n");
     ll_print(booked_list, stdout, print_course_callback);
 }
@@ -159,7 +165,7 @@ void action_show_last_report(user_ptr user) {
     long sz = ftell(fp);
     rewind(fp);
     char *buf = malloc(sz+1);
-    if (!buf) { fclose(fp); return; }
+    CHECK_NULL(buf);
     fread(buf, 1, sz, fp);
     buf[sz] = '\0';
     fclose(fp);
@@ -518,7 +524,7 @@ void registration_user() {
     printf("Enter CF: ");
     if (fgets(cf, sizeof(cf), stdin) == NULL) {
         fprintf(stderr, "Failed to read CF.\n");
-        return;
+        exit(1);
     }
     cf[strcspn(cf, "\n")] = '\0';
 
@@ -526,7 +532,7 @@ void registration_user() {
     printf("Enter first name: ");
     if (fgets(first_name, sizeof(first_name), stdin) == NULL) {
         fprintf(stderr, "Failed to read first name.\n");
-        return;
+        exit(1);
     }
     first_name[strcspn(first_name, "\n")] = '\0';
 
@@ -534,7 +540,7 @@ void registration_user() {
     printf("Enter last name: ");
     if (fgets(last_name, sizeof(last_name), stdin) == NULL) {
         fprintf(stderr, "Failed to read last name.\n");
-        return;
+        exit(1);
     }
     last_name[strcspn(last_name, "\n")] = '\0';
 
@@ -542,7 +548,7 @@ void registration_user() {
     printf("Choose a username: ");
     if (fgets(username, sizeof(username), stdin) == NULL) {
         fprintf(stderr, "Failed to read username.\n");
-        return;
+        exit(1);
     }
     username[strcspn(username, "\n")] = '\0';
 
@@ -552,14 +558,14 @@ void registration_user() {
     if (file) {
         fclose(file);
         fprintf(stderr, "Error: Username '%s' already exists.\n", username);
-        return;
+        exit(1);
     }
 
     // Read password
     printf("Choose a password: ");
     if (fgets(password, sizeof(password), stdin) == NULL) {
         fprintf(stderr, "Failed to read password.\n");
-        return;
+        exit(1);
     }
     password[strcspn(password, "\n")] = '\0';
 
@@ -627,7 +633,7 @@ void report(char* filepath, user_ptr user, linked_list_ptr frequentation_linked_
         <
         get_datetime_field(current_datetime, "month");
     
-    if (!flag_year || !flag_month) return;
+    if (!flag_year || !flag_month) exit(1);
     
     // create flag
     FILE* file = fopen(filepath, "w");
@@ -657,7 +663,7 @@ void report(char* filepath, user_ptr user, linked_list_ptr frequentation_linked_
 
     int i = 0;
     frequentation_ptr* fr;
-    fprintf(file, "Top tree courses followed:\n");
+    fprintf(file, "Top three courses followed:\n");
     while(i < array_size && i < 3) {
         fr = (frequentation_ptr*)get_at(temp_array, i);
         print_frequentation_callback(file, *fr);
