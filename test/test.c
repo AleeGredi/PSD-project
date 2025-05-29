@@ -9,6 +9,8 @@
 int go_to_line(FILE *f, int target_line);
 int compare_files(const char *path1, const char *path2);
 void booking_test(int test_case_type, int id);
+void subscription_test(int test_case_type, int id);
+void report_test(int test_case_type, int id);
 
 int main(int argc, char* argv[]) {
     FILE *test_suite;
@@ -39,12 +41,11 @@ int main(int argc, char* argv[]) {
                 booking_test(test_case_type, id);
                 break;
             case 2:
-                
+                subscription_test(test_case_type, id);
                 break;
             case 3:
-                
+                report_test(test_case_type, id);
                 break;
-            
             default:
                 break;
         }
@@ -148,4 +149,92 @@ void booking_test(int test_case_type, int id) {
     }
 
     fclose(result_file);
+}
+
+void subscription_test(int test_case_type, int id) {
+    hash_map_ptr hash_map = NULL;
+    array_ptr array = NULL;
+    user_ptr user = NULL;
+    linked_list_ptr booked_list = NULL;
+    linked_list_ptr history_list = NULL;
+
+    char course_filepath[256];
+    sprintf(course_filepath, "test/%d/%d-%d_course.txt",test_case_type, test_case_type, id);
+    load_courses(course_filepath, &array, &hash_map);
+
+    char user_filepath[256];
+    sprintf(user_filepath, "test/%d/%d-%d_user.txt", test_case_type, test_case_type, id);
+    user = load_user(user_filepath, &booked_list, &history_list, &hash_map);
+
+    char user_oracle_filepath[256];
+    sprintf(user_oracle_filepath, "test/%d/%d-%d_user_oracle.txt", test_case_type, test_case_type, id);
+
+    char user_output_filepath[256];
+    sprintf(user_output_filepath, "test/%d/%d-%d_user_output.txt", test_case_type, test_case_type, id);
+
+    action_check_subscription(user);
+
+    save_user(user_output_filepath, booked_list, history_list, user);
+
+    ll_delete_list(booked_list, NULL);
+    ll_delete_list(history_list, NULL);
+    delete_hash_map(hash_map, true);
+
+    // Compare output to oracle
+    int subscription_test = !compare_files(user_oracle_filepath, user_output_filepath);
+
+    char result_filepath[256];
+    sprintf(result_filepath, "test/%d/%d-%d_test_result.txt", test_case_type, test_case_type, id);
+    FILE* result_file = fopen(result_filepath, "w");
+    if (result_file != NULL) {
+        fprintf(result_file, "test:%d = %s", id, subscription_test ? "PASS" : "NOT PASS");
+        fclose(result_file);
+    }
+}
+
+void report_test(int test_case_type, int id) {
+    hash_map_ptr hash_map = NULL;
+    array_ptr array = NULL;
+    user_ptr user = NULL;
+    linked_list_ptr booked_list = NULL;
+    linked_list_ptr history_list = NULL;
+
+    char course_filepath[256];
+    sprintf(course_filepath, "test/%d/%d-%d_course.txt",test_case_type, test_case_type, id);
+    load_courses(course_filepath, &array, &hash_map);
+
+    char user_filepath[256];
+    sprintf(user_filepath, "test/%d/%d-%d_user.txt", test_case_type, test_case_type, id);
+    user = load_user(user_filepath, &booked_list, &history_list, &hash_map);
+
+    char user_oracle_filepath[256];
+    sprintf(user_oracle_filepath, "test/%d/%d-%d_user_oracle.txt", test_case_type, test_case_type, id);
+
+    char user_output_filepath[256];
+    sprintf(user_output_filepath, "test/%d/%d-%d_user_output.txt", test_case_type, test_case_type, id);
+
+    char report_oracle_filepath[256];
+    sprintf(report_oracle_filepath, "test/%d/%d-%d_report_oracle.txt", test_case_type, test_case_type, id);
+
+    char report_output_filepath[256];
+    sprintf(report_output_filepath, "test/%d/%d-%d_report_output.txt", test_case_type, test_case_type, id);
+
+    report(report_output_filepath, user, history_list);
+    save_user(user_output_filepath, booked_list, history_list, user);
+
+    ll_delete_list(booked_list, NULL);
+    ll_delete_list(history_list, NULL);
+    delete_hash_map(hash_map, true);
+
+    // Compare output to oracle
+    int report_test = !compare_files(report_oracle_filepath, report_output_filepath);
+    int user_test = !compare_files(user_oracle_filepath, user_output_filepath);
+    
+    char result_filepath[256];
+    sprintf(result_filepath, "test/%d/%d-%d_test_result.txt", test_case_type, test_case_type, id);
+    FILE* result_file = fopen(result_filepath, "w");
+    if (result_file != NULL) {
+        fprintf(result_file, "test:%d = %s", id, report_test && user_test ? "PASS" : "NOT PASS");
+        fclose(result_file);
+    }
 }

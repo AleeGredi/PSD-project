@@ -122,25 +122,26 @@ void action_check_subscription(user_ptr user) {
         printf("Subscription is valid.\n");
     } else {
         printf("Subscription has expired.\n");
-        printf("Do you want to renew it? (y or n): ");
-        char c = getchar(); getchar();
-        if (c=='y' || c=='Y') {
-            datetime_ptr now = get_datetime();
-            datetime_ptr end = create_datetime(
-                get_datetime_field(now,"minute"),
-                get_datetime_field(now,"hour"),
-                1,
-                (get_datetime_field(now,"month")+1)%12,
-                get_datetime_field(now,"year")
-            );
-            set_subscription_renew(
-               get_user_subscription(user),
-               now, end
-            );
-            printf("Subscription renewed.\n");
-        } else {
-            printf("Subscription will not be renewed.\n");
-        }
+        datetime_ptr now = get_datetime();
+        datetime_ptr start = create_datetime(
+            00,
+            00,
+            get_datetime_field(now, "day"),
+            get_datetime_field(now,"month"),
+            get_datetime_field(now,"year")
+        );
+        datetime_ptr end = create_datetime(
+            59,
+            23,
+            1,
+            (get_datetime_field(now,"month")+1)%12,
+            get_datetime_field(now,"year")
+        );
+        set_subscription_renew(
+            get_user_subscription(user),
+            start, end
+        );
+        printf("Subscription renewed.\n");
     }
 }
 
@@ -176,7 +177,11 @@ void action_exit_and_save(hash_map_ptr map,
 {
     char user_filepath[192] = {0};
     snprintf(user_filepath, sizeof(user_filepath), "assets/users/%s.txt", get_user_username(user));
-    report(user, history);
+
+    char report_filepath[256] = {0};
+    snprintf(report_filepath, sizeof(report_filepath), "assets/report/%s_report.txt", get_user_username(user));
+
+    report(report_filepath, user, history);
     save_user(user_filepath, booked, history, user);
     save_course(COURSE_PATH, array);
     array_delete(array, NULL);
@@ -560,15 +565,21 @@ void registration_user() {
 
     // Prepare subscription dates
     datetime_ptr now = get_datetime();
-    datetime_ptr start = get_datetime();
-    // Set subscription end date to day 1st of next month
-        datetime_ptr end = create_datetime(
-            get_datetime_field(now, "minute"),
-            get_datetime_field(now, "hour"),
-            1,
-            (get_datetime_field(now, "month") + 1) % 12,
-            get_datetime_field(now, "year")
+    datetime_ptr start = create_datetime(
+            00,
+            00,
+            get_datetime_field(now, "day"),
+            get_datetime_field(now,"month"),
+            get_datetime_field(now,"year")
         );
+    // Set subscription end date to day 1st of next month
+    datetime_ptr end = create_datetime(
+        59,
+        23,
+        1,
+        (get_datetime_field(now, "month") + 1) % 12,
+        get_datetime_field(now, "year")
+    );
     subscription_ptr sub = create_subscription(start, end);
 
     // Create user struct
@@ -596,13 +607,18 @@ void registration_user() {
     delete_user(new_user);
     ll_delete_list(booked_list, NULL);
     ll_delete_list(history_list, NULL);
-    
-    printf("Registration successful. User '%s' created.\n", username);
 }
 
-void report(user_ptr user, linked_list_ptr frequentation_linked_list) {
+void report(char* filepath, user_ptr user, linked_list_ptr frequentation_linked_list) {
     datetime_ptr last_report_datetime = get_user_last_report_date(user);
-    datetime_ptr current_datetime = get_datetime();
+    datetime_ptr now = get_datetime();
+    datetime_ptr current_datetime = create_datetime(
+            00,
+            00,
+            get_datetime_field(now, "day"),
+            get_datetime_field(now,"month"),
+            get_datetime_field(now,"year")
+        );
     
     int flag_year = get_datetime_field(last_report_datetime, "year") 
         <= 
@@ -613,10 +629,8 @@ void report(user_ptr user, linked_list_ptr frequentation_linked_list) {
     
     if (!flag_year || !flag_month) return;
     
-    char filename[256] = {0};
-    snprintf(filename, sizeof(filename), "%s%s_report.txt", REPORT_PATH, get_user_username(user));
     // create flag
-    FILE* file = fopen(filename, "w");
+    FILE* file = fopen(filepath, "w");
     CHECK_NULL(file);
 
     int array_size = ll_get_element_count(frequentation_linked_list);

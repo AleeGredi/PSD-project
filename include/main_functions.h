@@ -31,6 +31,6 @@ user_ptr load_user(const char *filepath, linked_list_ptr *booked_list, linked_li
 void save_user(char* filepath, linked_list_ptr booked_list, linked_list_ptr history_list, user_ptr user);
 void registration_user();
 void save_course(char* filepath, array_ptr array);
-void report(user_ptr user, linked_list_ptr frequentation_linked_list);
+void report(char* filepath, user_ptr user, linked_list_ptr frequentation_linked_list);
 
 #endif 
